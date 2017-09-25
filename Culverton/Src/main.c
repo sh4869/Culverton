@@ -49,6 +49,8 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -60,6 +62,7 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_USART1_UART_Init(void);
                                     
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -104,6 +107,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM3_Init();
   MX_TIM2_Init();
+  MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
 
@@ -292,6 +296,25 @@ static void MX_TIM3_Init(void)
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* USART1 init function */
+static void MX_USART1_UART_Init(void)
+{
+
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
