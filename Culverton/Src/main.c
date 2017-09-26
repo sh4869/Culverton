@@ -71,6 +71,17 @@ static void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN 0 */
 
+// -------------------------------------------------
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+void __io_putchar(uint8_t ch)
+{
+  HAL_UART_Transmit(&huart1, &ch, 1, 1);
+}
+// --------------------------------------------------
 TIM_MasterConfigTypeDef sMasterConfig;
 TIM_OC_InitTypeDef sConfigOC;
 
