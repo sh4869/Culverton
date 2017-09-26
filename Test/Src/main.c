@@ -61,9 +61,8 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM11_Init(void);
 static void MX_TIM1_Init(void);
-                                    
+
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-                                
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -72,15 +71,13 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN 0 */
 
-  TIM_OC_InitTypeDef sConfigOC;
+TIM_OC_InitTypeDef sConfigOC;
 /* USER CODE END 0 */
 
 int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	int count = 0,oldcount = 0;
-	char str[1000];
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -106,70 +103,54 @@ int main(void)
   MX_TIM1_Init();
 
   /* USER CODE BEGIN 2 */
-//		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_SET);
-		HAL_TIM_Encoder_Start(&htim1,TIM_CHANNEL_ALL);
+  //		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_SET);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
-		oldcount = count;
-		count = TIM1->CNT;
-		if(count - oldcount> 100){
-			HAL_GPIO_WritePin(GPIOA,LD2_Pin,GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(GPIOA,LD2_Pin,GPIO_PIN_RESET);		
-		}
-		HAL_Delay(100);
-		/*
-		int pulse = 0;
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET);
-		while(pulse < 1000){
-		 sConfigOC.Pulse = pulse;
-		 if (HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-		 {
-		 Error_Handler();
-		 }
-		 if (HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1) != HAL_OK)
-		 {
-			Error_Handler();
-		 }
-		 count = TIM1->CNT;
-		 sprintf(str,"%d",count);
-		 HAL_UART_Transmit(&huart2,(uint8_t *)str,strlen(str),100);
-		 HAL_Delay(10);
-		 pulse += 5;
-		}
+    /* USER CODE BEGIN 3 */
+    int pulse = 0;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+    while (pulse < 1000)
+    {
+      sConfigOC.Pulse = pulse;
+      if (HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+      {
+        Error_Handler();
+      }
+      if (HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1) != HAL_OK)
+      {
+        Error_Handler();
+      }
+      HAL_Delay(10);
+      pulse += 5;
+    }
 
-		HAL_Delay(500);
-		while(pulse > 0){
-		 sConfigOC.Pulse = pulse;
-		 if (HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-		 {
-		 Error_Handler();
-		 }
-		 if (HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1) != HAL_OK)
-		 {
-			Error_Handler();
-		 }
-		 count = TIM1->CNT;
- 		 sprintf(str,"%d",count);
-		 HAL_UART_Transmit(&huart2,(uint8_t *)str,strlen(str),100);
-		 HAL_Delay(10);
-		 pulse -= 5;
-		}
-		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_9,GPIO_PIN_RESET);
-		HAL_Delay(500);
-		*/
-		
+    HAL_Delay(500);
+    while (pulse > 0)
+    {
+      sConfigOC.Pulse = pulse;
+      if (HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+      {
+        Error_Handler();
+      }
+      if (HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1) != HAL_OK)
+      {
+        Error_Handler();
+      }
+      HAL_Delay(10);
+      pulse -= 5;
+    }
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+    HAL_Delay(500);
   }
   /* USER CODE END 3 */
-
 }
 
 /** System Clock Configuration
@@ -180,13 +161,13 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-    /**Configure the main internal regulator output voltage 
+  /**Configure the main internal regulator output voltage 
     */
   __HAL_RCC_PWR_CLK_ENABLE();
 
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
@@ -202,10 +183,9 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -216,11 +196,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time 
+  /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
-    /**Configure the Systick 
+  /**Configure the Systick 
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -261,7 +241,6 @@ static void MX_TIM1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /* TIM11 init function */
@@ -295,7 +274,6 @@ static void MX_TIM11_Init(void)
   }
 
   HAL_TIM_MspPostInit(&htim11);
-
 }
 
 /* USART2 init function */
@@ -314,7 +292,6 @@ static void MX_USART2_UART_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /** Configure pins as 
@@ -336,7 +313,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LD2_Pin | GPIO_PIN_6 | GPIO_PIN_7, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
@@ -348,7 +325,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD2_Pin PA6 PA7 */
-  GPIO_InitStruct.Pin = LD2_Pin|GPIO_PIN_6|GPIO_PIN_7;
+  GPIO_InitStruct.Pin = LD2_Pin | GPIO_PIN_6 | GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -360,7 +337,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -372,14 +348,14 @@ static void MX_GPIO_Init(void)
   * @param  None
   * @retval None
   */
-void _Error_Handler(char * file, int line)
+void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
+  while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */ 
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef USE_FULL_ASSERT
@@ -391,23 +367,22 @@ void _Error_Handler(char * file, int line)
    * @param line: assert_param error line source number
    * @retval None
    */
-void assert_failed(uint8_t* file, uint32_t line)
+void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
 }
 
 #endif
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
