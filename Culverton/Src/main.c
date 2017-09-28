@@ -40,11 +40,14 @@
 #include "stm32f1xx_hal.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
 
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc2;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -67,6 +70,7 @@ static void MX_TIM4_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM8_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_ADC2_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -90,40 +94,148 @@ void __io_putchar(uint8_t ch)
 }
 // --------------------------------------------------
 
-TIM_MasterConfigTypeDef sMasterConfig;
-TIM_OC_InitTypeDef sConfigOC;
+void Delay(__IO uint32_t nCount)
+{
+  for (; nCount != 0; nCount--)
+    ;
+}
+
+uint32_t GetADC1(uint32_t channel)
+{
+  ADC_ChannelConfTypeDef sConfig;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.Channel = channel;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    return 0;
+  }
+  uint32_t adcValue;
+  HAL_ADC_Start(&hadc1);
+  while (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK)
+    ;
+  adcValue = HAL_ADC_GetValue(&hadc1);
+  return adcValue;
+}
+
+uint32_t GetADC2(uint32_t channel){
+  ADC_ChannelConfTypeDef sConfig;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.Channel = channel;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    return 0;
+  }
+  uint32_t adcValue;
+  HAL_ADC_Start(&hadc2);
+  while (HAL_ADC_PollForConversion(&hadc2, 10) != HAL_OK)
+    ;
+  adcValue = HAL_ADC_GetValue(&hadc2);
+  return adcValue;
+}
 
 void Battery_Check()
 {
   uint32_t adcValue;
+  ADC_ChannelConfTypeDef sConfig;
+  sConfig.Rank = 0;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.Channel = ADC_CHANNEL_9;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) return;
   HAL_ADC_Start(&hadc1);
-  if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
+  while (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK)
+    ;
+  adcValue = HAL_ADC_GetValue(&hadc1);
+  HAL_ADC_Stop(&hadc1);
+  if (adcValue < 2560)
   {
-    adcValue = HAL_ADC_GetValue(&hadc1);
-    HAL_ADC_Stop(&hadc1);
-    if (adcValue < 2560)
+    while (1)
     {
-      while (1)
+      HAL_ADC_Start(&hadc1);
+      while (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
+        ;
+      adcValue = HAL_ADC_GetValue(&hadc1);
+      HAL_ADC_Stop(&hadc1);
+      if (adcValue > 2560)
       {
-        HAL_ADC_Start(&hadc1);
-        if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
-        {
-          adcValue = HAL_ADC_GetValue(&hadc1);
-          HAL_ADC_Stop(&hadc1);
-          if (adcValue > 2560)
-          {
-            break;
-          }
-        }
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
-        HAL_Delay(300);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
-        HAL_Delay(300);
+        break;
       }
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
+      HAL_Delay(300);
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
+      HAL_Delay(300);
     }
   }
 }
 
+void start_tim8_pwm(uint32_t channel,uint32_t pulse){
+  TIM_OC_InitTypeDef sConfigOC;
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = pulse;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if(HAL_TIM_PWM_ConfigChannel(&htim8,&sConfigOC,channel) != HAL_OK){
+    Error_Handler();
+  } 
+  if (HAL_TIM_PWM_Start(&htim8, channel) != HAL_OK)
+  {
+    Error_Handler();
+  } 
+}
+
+void Start_RightMotor_PWM(int pulse)
+{
+  start_tim8_pwm(TIM_CHANNEL_2,pulse);
+}
+void Start_LeftMotor_PWM(int pulse)
+{
+  start_tim8_pwm(TIM_CHANNEL_1,pulse);
+}
+
+void Stop_RightMotor_PWM(){
+  HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_2);
+}
+
+void Stop_LeftMotor_PWM(){
+  HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_1);
+}
+
+void Turn_Around_RightMotor(){
+  HAL_GPIO_TogglePin(MOTOR_RIGHT_IN1_GPIO_Port,MOTOR_RIGHT_IN1_Pin);
+  HAL_GPIO_TogglePin(MOTOR_RIGHT_IN2_GPIO_Port,MOTOR_RIGHT_IN2_Pin);
+}
+
+void Turn_Around_LeftMotor(){
+  HAL_GPIO_TogglePin(MOTOR_LEFT_IN1_GPIO_Port,MOTOR_LEFT_IN1_Pin);
+  HAL_GPIO_TogglePin(MOTOR_LEFT_IN2_GPIO_Port,MOTOR_LEFT_IN2_Pin);
+}
+
+void setMotorMode()
+{
+  HAL_GPIO_WritePin(MOTOR_STBY_GPIO_Port, MOTOR_STBY_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MOTOR_RIGHT_IN1_GPIO_Port, MOTOR_RIGHT_IN1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MOTOR_RIGHT_IN2_GPIO_Port, MOTOR_RIGHT_IN2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MOTOR_LEFT_IN1_GPIO_Port, MOTOR_LEFT_IN1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MOTOR_LEFT_IN2_GPIO_Port, MOTOR_LEFT_IN2_Pin, GPIO_PIN_RESET);
+}
+
+void unsetMotorMode()
+{
+  // STBY -> ON
+  HAL_GPIO_WritePin(MOTOR_STBY_GPIO_Port, MOTOR_STBY_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MOTOR_RIGHT_IN1_GPIO_Port, MOTOR_RIGHT_IN1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MOTOR_RIGHT_IN2_GPIO_Port, MOTOR_RIGHT_IN2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MOTOR_LEFT_IN1_GPIO_Port, MOTOR_LEFT_IN1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MOTOR_LEFT_IN2_GPIO_Port, MOTOR_LEFT_IN2_Pin, GPIO_PIN_RESET);
+}
+
+uint32_t sensor[4] = {0};
+uint32_t sensor_h[4] = {0}, sensor_l[4] = {0};
+uint32_t r_speed,l_speed;
 /* USER CODE END 0 */
 
 int main(void)
@@ -157,26 +269,72 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM8_Init();
   MX_TIM3_Init();
+  MX_ADC2_Init();
 
   /* USER CODE BEGIN 2 */
-  printf("Start Program\n");
-  HAL_TIM_Base_Start_IT(&htim4);
+  //Battery_Check();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  GPIO_PinState oldState = GPIO_PIN_RESET,state;
+  int mode = 0;
+  char str[1000];
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    //Battery_Check();
-    /*
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
-    HAL_Delay(300);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
-    HAL_Delay(300);
-    */
+    state = HAL_GPIO_ReadPin(SW1_GPIO_Port, SW1_Pin);
+    if(state == GPIO_PIN_SET && oldState == GPIO_PIN_RESET){
+      mode++;
+    }
+    oldState = state;
+
+    switch (mode%4)
+    {
+    // Step Mode
+    case 0:
+      unsetMotorMode();
+      HAL_TIM_Base_Stop_IT(&htim4);
+      HAL_GPIO_WritePin(IFLED1_GPIO_Port, IFLED1_Pin, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(IFLED2_GPIO_Port, IFLED2_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED3_GPIO_Port, IFLED3_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED4_GPIO_Port, IFLED4_Pin, GPIO_PIN_RESET);
+      break;
+    // Sensor Mode
+    case 1:
+      unsetMotorMode();
+      HAL_TIM_Base_Start_IT(&htim4);
+      HAL_TIM_Encoder_Start(&htim2,TIM_CHANNEL_ALL);
+      HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_ALL);
+      HAL_GPIO_WritePin(IFLED2_GPIO_Port, IFLED2_Pin, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(IFLED1_GPIO_Port, IFLED1_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED3_GPIO_Port, IFLED3_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED4_GPIO_Port, IFLED4_Pin, GPIO_PIN_RESET);
+      sprintf(str,"%ld,%ld,%ld,%ld\n",sensor_h[0],sensor_h[1],sensor_h[2],sensor_h[3]);
+      HAL_UART_Transmit(&huart1,(uint8_t *)str,strlen(str),-1);
+      HAL_Delay(100);
+      break;
+    // RUN Mode
+    case 2:
+      HAL_GPIO_WritePin(IFLED3_GPIO_Port, IFLED3_Pin, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(IFLED2_GPIO_Port, IFLED2_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED1_GPIO_Port, IFLED1_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED4_GPIO_Port, IFLED4_Pin, GPIO_PIN_RESET);
+      setMotorMode();
+      Turn_Around_RightMotor();
+      Start_RightMotor_PWM(200);
+      Start_LeftMotor_PWM(200);
+      break;
+    case 3:
+      HAL_GPIO_WritePin(IFLED4_GPIO_Port, IFLED4_Pin, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(IFLED2_GPIO_Port, IFLED2_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED3_GPIO_Port, IFLED3_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IFLED1_GPIO_Port, IFLED1_Pin, GPIO_PIN_RESET);
+      unsetMotorMode();
+      break;
+    }
   }
   /* USER CODE END 3 */
 
@@ -246,12 +404,12 @@ static void MX_ADC1_Init(void)
     /**Common config 
     */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 4;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -263,6 +421,65 @@ static void MX_ADC1_Init(void)
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_10;
+  sConfig.Rank = 2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_11;
+  sConfig.Rank = 3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Rank = 4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* ADC2 init function */
+static void MX_ADC2_Init(void)
+{
+
+  ADC_ChannelConfTypeDef sConfig;
+
+    /**Common config 
+    */
+  hadc2.Instance = ADC2;
+  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc2.Init.ContinuousConvMode = DISABLE;
+  hadc2.Init.DiscontinuousConvMode = DISABLE;
+  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc2.Init.NbrOfConversion = 1;
+  if (HAL_ADC_Init(&hadc2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_13;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -312,7 +529,7 @@ static void MX_TIM3_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 65535;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 0;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -347,9 +564,9 @@ static void MX_TIM4_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 6399;
+  htim4.Init.Prescaler = 63;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 10000;
+  htim4.Init.Period = 5000;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
@@ -380,9 +597,9 @@ static void MX_TIM8_Init(void)
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
 
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 0;
+  htim8.Init.Prescaler = 63;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 0;
+  htim8.Init.Period = 999;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   if (HAL_TIM_PWM_Init(&htim8) != HAL_OK)
@@ -511,19 +728,45 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+char str[1000];
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if(htim->Instance == htim4.Instance){
-    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_SET);
-    for(volatile int i = 0;i<100;i++);
-    // Input sensor adc here
-    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_SET);
-    for(volatile int i = 0;i<100;i++);
-    // Input sensor ad here
-    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_RESET);
+  if (htim->Instance == htim4.Instance)
+  {
+    HAL_GPIO_WritePin(SENSORLED2_GPIO_Port, SENSORLED2_Pin, GPIO_PIN_SET);
+    Delay(1000);
+    sensor_h[2] = GetADC1(ADC_CHANNEL_12);
+    HAL_GPIO_WritePin(SENSORLED2_GPIO_Port, SENSORLED2_Pin, GPIO_PIN_RESET);
+    Delay(1000);
+    sensor_l[2] = GetADC1(ADC_CHANNEL_12);
+    // 
+    HAL_GPIO_WritePin(SENSORLED1_GPIO_Port, SENSORLED1_Pin, GPIO_PIN_SET);
+    Delay(1000);
+    sensor_h[0] = GetADC1(ADC_CHANNEL_10);
+    HAL_GPIO_WritePin(SENSORLED1_GPIO_Port, SENSORLED1_Pin, GPIO_PIN_RESET);
+    Delay(1000);
+    sensor_l[0] = GetADC1(ADC_CHANNEL_10);
+    // 
+    HAL_GPIO_WritePin(SENSORLED1_GPIO_Port, SENSORLED1_Pin, GPIO_PIN_SET);
+    Delay(1000);
+    sensor_h[1] = GetADC1(ADC_CHANNEL_11);
+    HAL_GPIO_WritePin(SENSORLED1_GPIO_Port, SENSORLED1_Pin, GPIO_PIN_RESET);
+    Delay(1000);
+    sensor_l[1] = GetADC1(ADC_CHANNEL_11);
+    // 
+    HAL_GPIO_WritePin(SENSORLED2_GPIO_Port, SENSORLED2_Pin, GPIO_PIN_SET);
+    Delay(1000);
+    sensor_h[3] = GetADC2(ADC_CHANNEL_13);
+    HAL_GPIO_WritePin(SENSORLED2_GPIO_Port, SENSORLED2_Pin, GPIO_PIN_RESET);
+    Delay(1000);
+    sensor_l[3] = GetADC2(ADC_CHANNEL_13);
+    for (int i = 0; i < 4; i++)
+    {
+      sensor[i] = sensor_h[i] - sensor_l[i];
+    }
   }
 }
+
 /* USER CODE END 4 */
 
 /**
