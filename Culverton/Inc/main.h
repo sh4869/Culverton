@@ -46,6 +46,55 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define SENSOR1_Pin GPIO_PIN_0
+#define SENSOR1_GPIO_Port GPIOC
+#define SENSOR2_Pin GPIO_PIN_1
+#define SENSOR2_GPIO_Port GPIOC
+#define SENSOR3_Pin GPIO_PIN_2
+#define SENSOR3_GPIO_Port GPIOC
+#define SENSOR4_Pin GPIO_PIN_3
+#define SENSOR4_GPIO_Port GPIOC
+#define ENCODER_RIGHT1_Pin GPIO_PIN_0
+#define ENCODER_RIGHT1_GPIO_Port GPIOA
+#define ENCODER_RIGHT2_Pin GPIO_PIN_1
+#define ENCODER_RIGHT2_GPIO_Port GPIOA
+#define ENCODER_LEFT_2_Pin GPIO_PIN_6
+#define ENCODER_LEFT_2_GPIO_Port GPIOA
+#define ENCODER_LEFT_1_Pin GPIO_PIN_7
+#define ENCODER_LEFT_1_GPIO_Port GPIOA
+#define IFLED1_Pin GPIO_PIN_4
+#define IFLED1_GPIO_Port GPIOC
+#define IFLED3_Pin GPIO_PIN_5
+#define IFLED3_GPIO_Port GPIOC
+#define IFLED2_Pin GPIO_PIN_0
+#define IFLED2_GPIO_Port GPIOB
+#define BATTERY_Pin GPIO_PIN_1
+#define BATTERY_GPIO_Port GPIOB
+#define IFLED1B10_Pin GPIO_PIN_10
+#define IFLED1B10_GPIO_Port GPIOB
+#define MOTOR_RIHGT_PWM_Pin GPIO_PIN_6
+#define MOTOR_RIHGT_PWM_GPIO_Port GPIOC
+#define MOTOR_RIGHT_PWM_Pin GPIO_PIN_7
+#define MOTOR_RIGHT_PWM_GPIO_Port GPIOC
+#define MOTOR_LEFT_IN1_Pin GPIO_PIN_8
+#define MOTOR_LEFT_IN1_GPIO_Port GPIOC
+#define MOTOR_LEFT_IN2_Pin GPIO_PIN_9
+#define MOTOR_LEFT_IN2_GPIO_Port GPIOC
+#define MOTOR_STBY_Pin GPIO_PIN_11
+#define MOTOR_STBY_GPIO_Port GPIOA
+#define MOTOR_RIGHT_IN2_Pin GPIO_PIN_12
+#define MOTOR_RIGHT_IN2_GPIO_Port GPIOA
+#define SW2_Pin GPIO_PIN_10
+#define SW2_GPIO_Port GPIOC
+#define MOTOR_RIGHT_IN1_Pin GPIO_PIN_11
+#define MOTOR_RIGHT_IN1_GPIO_Port GPIOC
+#define SW1_Pin GPIO_PIN_5
+#define SW1_GPIO_Port GPIOB
+#define SENSORLED1_Pin GPIO_PIN_6
+#define SENSORLED1_GPIO_Port GPIOB
+#define SENSORLED2_Pin GPIO_PIN_7
+#define SENSORLED2_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
