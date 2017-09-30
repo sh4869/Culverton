@@ -202,7 +202,7 @@ void LightLEDforMode(int mode) {
   GPIO_TypeDef *ports[4] = {IFLED1_GPIO_Port, IFLED2_GPIO_Port, IFLED3_GPIO_Port, IFLED4_GPIO_Port};
   uint16_t pins[4] = {IFLED1_Pin, IFLED2_Pin, IFLED3_Pin, IFLED4_Pin};
   GPIO_PinState pinstates[4] = {GPIO_PIN_RESET, GPIO_PIN_RESET, GPIO_PIN_RESET, GPIO_PIN_RESET};
-  if (mode > 0 && mode < 4) {
+  if (mode > -1 && mode < 4) {
     pinstates[mode] = GPIO_PIN_SET;
   }
   for (int i = 0; i < 4; i++) {
