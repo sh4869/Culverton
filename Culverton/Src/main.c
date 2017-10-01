@@ -47,6 +47,7 @@
 #include "stm32f1xx_hal.h"
 
 /* USER CODE BEGIN Includes */
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -156,8 +157,8 @@ void start_tim8_pwm(uint32_t channel, uint32_t pulse) {
 
 // --- MOTOR FUNCTION ---
 
-void Start_RightMotor_PWM(int pulse) { start_tim8_pwm(TIM_CHANNEL_2, pulse); }
-void Start_LeftMotor_PWM(int pulse) { start_tim8_pwm(TIM_CHANNEL_1, pulse); }
+void Update_RightMotor_PWM(int pulse) { start_tim8_pwm(TIM_CHANNEL_2, pulse); }
+void Update_LeftMotor_PWM(int pulse) { start_tim8_pwm(TIM_CHANNEL_1, pulse); }
 
 void Stop_RightMotor_PWM() { HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_2); }
 
@@ -215,8 +216,10 @@ uint32_t sensor[4] = {0};
 uint32_t sensor_h[4] = {0}, sensor_l[4] = {0};
 uint32_t encoder_r, encoder_l, oldencoder_r = 0, oldencoder_l = 0;
 float r_speed, l_speed;
-uint32_t target_value_r, target_value_l;
-bool is_runnning;
+uint32_t target_value_r = 0, target_value_l = 0;
+uint32_t current_value_r = 0, current_value_l = 0;
+uint32_t base_value_r = 0, base_value_l = 0;
+bool is_runnning = false;
 uint32_t battery_value;
 const int WALL_VALUE = 1500;
 /* USER CODE END 0 */
@@ -287,30 +290,61 @@ int main(void) {
     switch (mode % 4) {
       // Step Mode
       case 0:
+        HAL_TIM_Base_Stop_IT(&htim4);
         break;
       // Sensor Mode
       case 1:
         if (HAL_TIM_Base_GetState(&htim4) != HAL_TIM_STATE_BUSY) {
           HAL_TIM_Base_Start_IT(&htim4);
         }
-        sprintf(str, "%ld,%ld,%ld,%ld\n", sensor_h[0], sensor_h[1], sensor_h[2], sensor_h[3]);
-        HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-        sprintf(str, "V: %f\n", battery_value / 4098.0F * 3.3 * (10.0 + 22.0) / 10.0);
+        HAL_Delay(100);
+        sprintf(str, "%ld,%ld\n", sensor[2], sensor[3]);
         HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
         break;
       // RUN Mode
       case 2:
         setMotorMode();
         Turn_Around_RightMotor();
-        Start_RightMotor_PWM(200);
-        Start_LeftMotor_PWM(200);
-        sprintf(str, "%ld,%ld,%ld,%ld\n", sensor[0], sensor[1], sensor[2], sensor[3]);
+        // Start
+        if (!is_runnning) {
+          HAL_Delay(3000);
+          target_value_r = 150;
+          target_value_l = 150;
+          is_runnning = true;
+        }
+        //float para = (float)(sensor[2] - 200 - sensor[3]) /10.0F;
+        float para = ((float)sensor[2] - 200.0F) / 25.0F - (float)sensor[3] / 25.0F;
+        sprintf(str, "%f\n", para);
         HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+
+        target_value_r = 150 + para;
+        target_value_l = 150 - para;
+        /*
+        sprintf(str,"%ld\n",sensor[3] - sensor[2]);
+        HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+        */
+      
+        //HAL_Delay(100);
+        sprintf(str, "SENSOR:%ld,%ld\n", sensor[2], sensor[3]);
+        HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+        sprintf(str, "TARGET:%ld,%ld\n", target_value_r, target_value_l);
+        HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+        /*
+        sprintf(str, "%ld,%ld\n", encoder_r, encoder_l);
+        HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+        */
         if (sensor[2] > WALL_VALUE && sensor[3] > WALL_VALUE) {
           mode++;
         }
         break;
       case 3:
+        target_value_r = 0;
+        target_value_l = 0;
+        current_value_r = 0;
+        current_value_l = 0;
+        base_value_r = 0;
+        base_value_l = 0;
+        is_runnning = false;
         Stop_RightMotor_PWM();
         Stop_LeftMotor_PWM();
         unsetMotorMode();
@@ -712,6 +746,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     sensor_l[1] = GetADC1(ADC_CHANNEL_11);
     for (int i = 0; i < 4; i++) {
       sensor[i] = sensor_h[i] - sensor_l[i];
+    }
+    encoder_r = GetRightMotorEncoderValue();
+    encoder_l = GetLeftMotorEncoderValue();
+    if (target_value_r > current_value_r) {
+      current_value_r = current_value_r + (target_value_r - base_value_r) / 5;
+      Update_RightMotor_PWM(target_value_r);
+    } else {
+      base_value_r = current_value_r;
+    }
+    if (target_value_l > current_value_l) {
+      current_value_l = current_value_l + (target_value_l - base_value_l) / 5;
+      Update_LeftMotor_PWM(target_value_l);
+    } else {
+      base_value_l = current_value_l;
     }
     /*
     battery_value = GetADC2(ADC_CHANNEL_9);
