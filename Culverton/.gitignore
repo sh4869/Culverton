@@ -2,3 +2,7 @@ Drivers/
 .mxproject
 .dep/
 build/
+.vscode
+# remove Reports
+Culverton.pdf
+Culverton.txt
