@@ -40,6 +40,9 @@
 #define __MAIN_H
   /* Includes ------------------------------------------------------------------*/
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -110,6 +113,11 @@ void _Error_Handler(char *, int);
 /**
   * @}
 */ 
+
+
+#ifdef __cplusplus
+ }
+#endif
 
 #endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
