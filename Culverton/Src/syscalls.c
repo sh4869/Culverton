@@ -16,6 +16,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 #define FreeRTOS
 #define MAX_STACK_SIZE 0x2000
 
@@ -169,7 +174,7 @@ int _stat(char *file, struct stat *st)
 	return 0;
 }
 
-int _link(char *old, char *new)
+int _link(char *old, char *news)
 {
 	errno = EMLINK;
 	return -1;
@@ -186,3 +191,7 @@ int _execve(char *name, char **argv, char **env)
 	errno = ENOMEM;
 	return -1;
 }
+
+#ifdef __cplusplus
+ }
+#endif
