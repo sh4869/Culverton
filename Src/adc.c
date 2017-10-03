@@ -164,16 +164,11 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
   
     /**ADC1 GPIO Configuration    
     PC1     ------> ADC1_IN11
-    PC2     ------> ADC1_IN12
-    PB1     ------> ADC1_IN9 
+    PC2     ------> ADC1_IN12 
     */
     GPIO_InitStruct.Pin = SENSOR2_Pin|SENSOR3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = BATTERY_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    HAL_GPIO_Init(BATTERY_GPIO_Port, &GPIO_InitStruct);
 
     /* ADC1 interrupt Init */
     HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
@@ -242,12 +237,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
   
     /**ADC1 GPIO Configuration    
     PC1     ------> ADC1_IN11
-    PC2     ------> ADC1_IN12
-    PB1     ------> ADC1_IN9 
+    PC2     ------> ADC1_IN12 
     */
     HAL_GPIO_DeInit(GPIOC, SENSOR2_Pin|SENSOR3_Pin);
-
-    HAL_GPIO_DeInit(BATTERY_GPIO_Port, BATTERY_Pin);
 
     /* ADC1 interrupt Deinit */
   /* USER CODE BEGIN ADC1:ADC1_2_IRQn disable */
