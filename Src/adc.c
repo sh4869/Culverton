@@ -63,7 +63,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 4;
+  hadc1.Init.NbrOfConversion = 2;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -71,7 +71,7 @@ void MX_ADC1_Init(void)
 
     /**Configure Regular Channel 
     */
-  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Channel = ADC_CHANNEL_11;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -81,26 +81,8 @@ void MX_ADC1_Init(void)
 
     /**Configure Regular Channel 
     */
-  sConfig.Channel = ADC_CHANNEL_10;
-  sConfig.Rank = 2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure Regular Channel 
-    */
-  sConfig.Channel = ADC_CHANNEL_11;
-  sConfig.Rank = 3;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure Regular Channel 
-    */
   sConfig.Channel = ADC_CHANNEL_12;
-  sConfig.Rank = 4;
+  sConfig.Rank = 2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -177,16 +159,15 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
   /* USER CODE BEGIN ADC1_MspInit 0 */
 
   /* USER CODE END ADC1_MspInit 0 */
-    /* Peripheral clock enable */
+    /* ADC1 clock enable */
     __HAL_RCC_ADC1_CLK_ENABLE();
   
     /**ADC1 GPIO Configuration    
-    PC0     ------> ADC1_IN10
     PC1     ------> ADC1_IN11
     PC2     ------> ADC1_IN12
     PB1     ------> ADC1_IN9 
     */
-    GPIO_InitStruct.Pin = SENSOR1_Pin|SENSOR2_Pin|SENSOR3_Pin;
+    GPIO_InitStruct.Pin = SENSOR2_Pin|SENSOR3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -206,7 +187,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
   /* USER CODE BEGIN ADC2_MspInit 0 */
 
   /* USER CODE END ADC2_MspInit 0 */
-    /* Peripheral clock enable */
+    /* ADC2 clock enable */
     __HAL_RCC_ADC2_CLK_ENABLE();
   
     /**ADC2 GPIO Configuration    
@@ -228,15 +209,16 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
   /* USER CODE BEGIN ADC3_MspInit 0 */
 
   /* USER CODE END ADC3_MspInit 0 */
-    /* Peripheral clock enable */
+    /* ADC3 clock enable */
     __HAL_RCC_ADC3_CLK_ENABLE();
   
     /**ADC3 GPIO Configuration    
+    PC0     ------> ADC3_IN10
     PC3     ------> ADC3_IN13 
     */
-    GPIO_InitStruct.Pin = SENSOR4_Pin;
+    GPIO_InitStruct.Pin = SENSOR1_Pin|SENSOR4_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    HAL_GPIO_Init(SENSOR4_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* ADC3 interrupt Init */
     HAL_NVIC_SetPriority(ADC3_IRQn, 0, 0);
@@ -259,12 +241,11 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC1_CLK_DISABLE();
   
     /**ADC1 GPIO Configuration    
-    PC0     ------> ADC1_IN10
     PC1     ------> ADC1_IN11
     PC2     ------> ADC1_IN12
     PB1     ------> ADC1_IN9 
     */
-    HAL_GPIO_DeInit(GPIOC, SENSOR1_Pin|SENSOR2_Pin|SENSOR3_Pin);
+    HAL_GPIO_DeInit(GPIOC, SENSOR2_Pin|SENSOR3_Pin);
 
     HAL_GPIO_DeInit(BATTERY_GPIO_Port, BATTERY_Pin);
 
@@ -316,9 +297,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC3_CLK_DISABLE();
   
     /**ADC3 GPIO Configuration    
+    PC0     ------> ADC3_IN10
     PC3     ------> ADC3_IN13 
     */
-    HAL_GPIO_DeInit(SENSOR4_GPIO_Port, SENSOR4_Pin);
+    HAL_GPIO_DeInit(GPIOC, SENSOR1_Pin|SENSOR4_Pin);
 
     /* ADC3 interrupt Deinit */
     HAL_NVIC_DisableIRQ(ADC3_IRQn);
