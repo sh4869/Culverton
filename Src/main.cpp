@@ -39,6 +39,7 @@
 #include "main.h"
 #include "adc.h"
 #include "gpio.h"
+#include "Led.h"
 #include "stm32f1xx_hal.h"
 #include "tim.h"
 #include "usart.h"
@@ -250,6 +251,7 @@ int main(void) {
   GPIO_PinState oldState = GPIO_PIN_RESET, state;
   int mode = 0;
   char str[1000];
+  Led *led = Led::getInstance();
   while (1) {
     /* USER CODE END WHILE */
 
@@ -262,6 +264,7 @@ int main(void) {
     oldState = state;
 
     LightLEDforMode(mode % 4);
+    led->AllOn();
     switch (mode % 4) {
     // Step Mode
     case 0:
