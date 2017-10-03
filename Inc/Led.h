@@ -22,7 +22,7 @@ class Led {
 
    public:
     ~Led();
-    static Led* getInstance();
+    static Led* GetInstance();
     void AllOn();
     void AllOff();
     void On(LedNumber num);

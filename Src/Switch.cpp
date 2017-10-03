@@ -29,7 +29,7 @@ void Switch::init() {
 
 Switch::~Switch() { delete instance; }
 
-Switch* Switch::getInstance() {
+Switch* Switch::GetInstance() {
     if(instance == nullptr){
         instance = new Switch();
         instance->init();
@@ -37,7 +37,7 @@ Switch* Switch::getInstance() {
     return instance;
 }
 
-bool Switch::isPressed(SwitchNumber number){
+bool Switch::IsPressed(SwitchNumber number){
     int index = static_cast<int>(number);
     // TODO チャタリング対策したほうが良さそう？
     if(HAL_GPIO_ReadPin(gpio_pins[index].first,gpio_pins[index].second) == GPIO_PIN_SET){

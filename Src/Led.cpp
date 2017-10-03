@@ -38,7 +38,7 @@ void Led::init() {
 }
 Led::~Led() { delete instance; }
 
-Led* Led::getInstance() {
+Led* Led::GetInstance() {
     if (instance == nullptr) {
         instance = new Led();
         instance->init();
@@ -54,21 +54,21 @@ void Led::AllOn() {
 
 void Led::AllOff() {
     for (uint i = 0; i < gpio_pins.size(); i++) {
-        HAL_GPIO_WritePin(gpio_pins[i].first, gpio_pins[i].second, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(gpio_pins[i].first, gpio_pins[i].second, GPIO_PIN_RESET);
     }
 }
 
-void Led::On(LedNumber num) {
+void Led::On(const LedNumber num) {
     int index = static_cast<int>(num);
     HAL_GPIO_WritePin(gpio_pins[index].first, gpio_pins[index].second, GPIO_PIN_SET);
 }
 
-void Led::Off(LedNumber num) {
+void Led::Off(const LedNumber num) {
     int index = static_cast<int>(num);
     HAL_GPIO_WritePin(gpio_pins[index].first, gpio_pins[index].second, GPIO_PIN_RESET);
 }
 
-void Led::OnOnly(LedNumber num) {
+void Led::OnOnly(const LedNumber num) {
     AllOff();
     Led::On(num);
 }

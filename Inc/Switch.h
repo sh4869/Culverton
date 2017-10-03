@@ -21,8 +21,8 @@ class Switch {
         void init();
     public:
         ~Switch();
-        static Switch* getInstance();
-        bool isPressed(SwitchNumber number);
+        static Switch* GetInstance();
+        bool IsPressed(SwitchNumber number);
 
 };
 
