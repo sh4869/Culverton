@@ -17,8 +17,8 @@ private:
     ADC_ChannelConfTypeDef sConfig;
     ADC_HandleTypeDef hadc2;
     const uint32_t adc_channel = ADC_CHANNEL_9;
-    bool enable = false;
-    uint32_t value = 0;
+    bool enable;
+    uint32_t value;
 
     BatteryMonitor();
     void init();
@@ -26,6 +26,8 @@ private:
 
 public:
     static BatteryMonitor* GetInstance();
-    float CheckBattery();
+    void Scan();
+    uint32_t GetRawValue();
+    float GetValue();
 };
 #endif
