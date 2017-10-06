@@ -40,6 +40,9 @@
 #include "adc.h"
 #include "gpio.h"
 #include "Led.h"
+#include "Switch.h"
+#include "BatteryMonitor.h"
+#include "Sensor.h"
 #include "stm32f1xx_hal.h"
 #include "tim.h"
 #include "usart.h"
@@ -81,38 +84,6 @@ void __io_putchar(uint8_t ch) { HAL_UART_Transmit(&huart1, &ch, 1, 1); }
 void Delay(__IO uint32_t nCount) {
   for (; nCount != 0; nCount--)
     ;
-}
-
-uint32_t GetADC1(uint32_t channel) {
-  ADC_ChannelConfTypeDef sConfig;
-  sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfig.Channel = channel;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-    return 0xffff;
-  }
-  uint32_t adcValue;
-  HAL_ADC_Start(&hadc1);
-  while (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK)
-    ;
-  adcValue = HAL_ADC_GetValue(&hadc1);
-  return adcValue;
-}
-
-uint32_t GetADC2(uint32_t channel) {
-  ADC_ChannelConfTypeDef sConfig;
-  sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfig.Channel = channel;
-  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
-    return 0;
-  }
-  uint32_t adcValue;
-  HAL_ADC_Start(&hadc2);
-  while (HAL_ADC_PollForConversion(&hadc2, 10) != HAL_OK)
-    ;
-  adcValue = HAL_ADC_GetValue(&hadc2);
-  return adcValue;
 }
 
 void start_tim8_pwm(uint32_t channel, uint32_t pulse) {
@@ -174,31 +145,15 @@ uint32_t GetRightMotorEncoderValue() { return TIM2->CNT; }
 
 uint32_t GetLeftMotorEncoderValue() { return TIM3->CNT; }
 
-// ------------- LED Lighting ---------------------
-
-void LightLEDforMode(int mode) {
-  GPIO_TypeDef *ports[4] = {IFLED1_GPIO_Port, IFLED2_GPIO_Port, IFLED3_GPIO_Port, IFLED4_GPIO_Port};
-  uint16_t pins[4] = {IFLED1_Pin, IFLED2_Pin, IFLED3_Pin, IFLED4_Pin};
-  GPIO_PinState pinstates[4] = {GPIO_PIN_RESET, GPIO_PIN_RESET, GPIO_PIN_RESET, GPIO_PIN_RESET};
-  if (mode > -1 && mode < 4) {
-    pinstates[mode] = GPIO_PIN_SET;
-  }
-  for (int i = 0; i < 4; i++) {
-    HAL_GPIO_WritePin(ports[i], pins[i], pinstates[i]);
-  }
-}
-
-// Global Variables
-uint32_t sensor[4] = {0};
-uint32_t sensor_h[4] = {0}, sensor_l[4] = {0};
 uint32_t encoder_r, encoder_l, oldencoder_r = 0, oldencoder_l = 0;
 float r_speed, l_speed;
 uint32_t target_value_r = 0, target_value_l = 0;
 uint32_t current_value_r = 0, current_value_l = 0;
 uint32_t base_value_r = 0, base_value_l = 0;
 bool is_runnning = false;
-uint32_t battery_value;
 const int WALL_VALUE = 1500;
+BatteryMonitor* bm;
+Sensor *sensors;
 /* USER CODE END 0 */
 
 int main(void) {
@@ -233,8 +188,10 @@ int main(void) {
   MX_TIM4_Init();
   MX_TIM2_Init();
   MX_ADC3_Init();
-
+  
   /* USER CODE BEGIN 2 */
+  bm = BatteryMonitor::GetInstance();
+  sensors = Sensor::GetInstance();
   // Encoder Start
   if (HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL) != HAL_OK) {
     Error_Handler();
@@ -248,37 +205,44 @@ int main(void) {
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  GPIO_PinState oldState = GPIO_PIN_RESET, state;
   int mode = 0;
   char str[1000];
-  Led *led = Led::getInstance();
+  
+  Led *led = Led::GetInstance();
+  Switch* sw = Switch::GetInstance();
+
+  bool pressed = false;
   while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
     // Mode Switch
-    state = HAL_GPIO_ReadPin(SW1_GPIO_Port, SW1_Pin);
-    if (state == GPIO_PIN_SET && oldState == GPIO_PIN_RESET) {
+    if(pressed == false && sw->IsPressed(SwitchNumber::ONE)){
       mode++;
     }
-    oldState = state;
-
-    LightLEDforMode(mode % 4);
-    led->AllOn();
+    pressed = sw->IsPressed(SwitchNumber::ONE);
+    led->OnOnly(static_cast<LedNumber>(mode % 4));
+    
     switch (mode % 4) {
     // Step Mode
     case 0:
       HAL_TIM_Base_Stop_IT(&htim4);
       break;
     // Sensor Mode
-    case 1:
+    case 1:{
       if (HAL_TIM_Base_GetState(&htim4) != HAL_TIM_STATE_BUSY) {
         HAL_TIM_Base_Start_IT(&htim4);
       }
       HAL_Delay(100);
-      sprintf(str, "%ld,%ld\n", sensor[2], sensor[3]);
+      auto values = sensors->GetValue();
+      sprintf(str, "SENSOR:%ld,%ld,%ld,%ld\n", values[0],values[1],values[2],values[3]);
+      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+      sprintf(str, "%ld,%ld\n", encoder_r, encoder_l);
+      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+      sprintf(str,"%f\n",bm->GetValue());
       HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
       break;
+    }
     // RUN Mode
     case 2: {
       setMotorMode();
@@ -290,30 +254,24 @@ int main(void) {
         target_value_l = 150;
         is_runnning = true;
       }
-      // float para = (float)(sensor[2] - 200 - sensor[3]) /10.0F;
+      /*
       float para = ((float)sensor[2] - 200.0F) / 25.0F - (float)sensor[3] / 25.0F;
       sprintf(str, "%f\n", para);
       HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-
+    
       target_value_r = 150 + para;
       target_value_l = 150 - para;
-      /*
-      sprintf(str,"%ld\n",sensor[3] - sensor[2]);
-      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-      */
 
       // HAL_Delay(100);
-      sprintf(str, "SENSOR:%ld,%ld\n", sensor[2], sensor[3]);
+      sprintf(str, "SENSOR:%ld,%ld\n", sensor->GetValue()[0], sensor->GetValue()[1]);
       HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
       sprintf(str, "TARGET:%ld,%ld\n", target_value_r, target_value_l);
       HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-      /*
-      sprintf(str, "%ld,%ld\n", encoder_r, encoder_l);
-      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-      */
+      
       if (sensor[2] > WALL_VALUE && sensor[3] > WALL_VALUE) {
         mode++;
       }
+      */
       break;
     }
     case 3:
@@ -387,32 +345,6 @@ void SystemClock_Config(void) {
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == htim4.Instance) {
-    // outside Sensors
-    HAL_GPIO_WritePin(SENSORLED2_GPIO_Port, SENSORLED2_Pin, GPIO_PIN_SET);
-    Delay(1000);
-    sensor_h[2] = GetADC1(ADC_CHANNEL_12);
-    Delay(1000);
-    sensor_h[3] = GetADC2(ADC_CHANNEL_13);
-    HAL_GPIO_WritePin(SENSORLED2_GPIO_Port, SENSORLED2_Pin, GPIO_PIN_RESET);
-    Delay(1000);
-    sensor_l[2] = GetADC1(ADC_CHANNEL_12);
-    Delay(1000);
-    sensor_l[3] = GetADC2(ADC_CHANNEL_13);
-
-    // Center Sensors
-    HAL_GPIO_WritePin(SENSORLED1_GPIO_Port, SENSORLED1_Pin, GPIO_PIN_SET);
-    Delay(1000);
-    sensor_h[0] = GetADC1(ADC_CHANNEL_10);
-    Delay(1000);
-    sensor_h[1] = GetADC1(ADC_CHANNEL_11);
-    HAL_GPIO_WritePin(SENSORLED1_GPIO_Port, SENSORLED1_Pin, GPIO_PIN_RESET);
-    Delay(1000);
-    sensor_l[0] = GetADC1(ADC_CHANNEL_10);
-    Delay(1000);
-    sensor_l[1] = GetADC1(ADC_CHANNEL_11);
-    for (int i = 0; i < 4; i++) {
-      sensor[i] = sensor_h[i] - sensor_l[i];
-    }
     encoder_r = GetRightMotorEncoderValue();
     encoder_l = GetLeftMotorEncoderValue();
     if (target_value_r > current_value_r) {
@@ -427,10 +359,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     } else {
       base_value_l = current_value_l;
     }
-    /*
-    battery_value = GetADC2(ADC_CHANNEL_9);
+    bm->Scan();
+    sensors->Scan();
     Delay(1000);
-    */
   }
 }
 
