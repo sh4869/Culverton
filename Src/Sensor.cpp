@@ -45,52 +45,63 @@ void Sensor::init() {
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // SENSOR Settings
-    int i= static_cast<int>(AdcNumber::ONE);
-    hadc[i].Instance = ADC1;
-    hadc[i].Init.ScanConvMode = ADC_SCAN_ENABLE;
-    hadc[i].Init.ContinuousConvMode = DISABLE;
-    hadc[i].Init.DiscontinuousConvMode = DISABLE;
-    hadc[i].Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    hadc[i].Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    hadc[i].Init.NbrOfConversion = 2;
-    HAL_ADC_Init(&hadc[i]);
-    sConfig[i].Channel = ADC_CHANNEL_11;
-    sConfig[i].Rank = 1;
-    sConfig[i].SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
-    HAL_ADC_ConfigChannel(&hadc[i], &sConfig[i]);
+    hadc1.Instance = ADC1;
+    hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+    hadc1.Init.ContinuousConvMode = DISABLE;
+    hadc1.Init.DiscontinuousConvMode = DISABLE;
+    hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    hadc1.Init.NbrOfConversion = 2;
+    HAL_ADC_Init(&hadc1);
+    sConfig1.Channel = ADC_CHANNEL_11;
+    sConfig1.Rank = 1;
+    sConfig1.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
+    HAL_ADC_ConfigChannel(&hadc1, &sConfig1);
 
-    i = static_cast<int>(AdcNumber::THREE);
-    hadc[i].Instance = ADC3;
-    hadc[i].Init.ScanConvMode = ADC_SCAN_DISABLE;
-    hadc[i].Init.ContinuousConvMode = DISABLE;
-    hadc[i].Init.DiscontinuousConvMode = DISABLE;
-    hadc[i].Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    hadc[i].Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    hadc[i].Init.NbrOfConversion = 1;
-    HAL_ADC_Init(&hadc[i]);
-    sConfig[i].Channel = ADC_CHANNEL_10;
-    sConfig[i].Rank = 1;
-    sConfig[i].SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
-    HAL_ADC_ConfigChannel(&hadc[i], &sConfig[i]);
+    hadc3.Instance = ADC3;
+    hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
+    hadc3.Init.ContinuousConvMode = DISABLE;
+    hadc3.Init.DiscontinuousConvMode = DISABLE;
+    hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    hadc3.Init.NbrOfConversion = 1;
+    HAL_ADC_Init(&hadc3);
+    sConfig3.Channel = ADC_CHANNEL_10;
+    sConfig3.Rank = 1;
+    sConfig3.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
+    HAL_ADC_ConfigChannel(&hadc3, &sConfig3);
 
     GPIO_InitStruct.Pin = SENSOR1_Pin | SENSOR4_Pin | SENSOR2_Pin | SENSOR3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+    HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
     enable = true;
 }
 
 uint32_t Sensor::getADCValue(
     std::pair<AdcNumber,uint32_t> sensor) {
-    int i = static_cast<int>(sensor.first);
-    sConfig[i].Channel = sensor.second;
-    sConfig[i].Rank = 1;
-    sConfig[i].SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
-    HAL_ADC_ConfigChannel(&hadc[i], &sConfig[i]);
-    HAL_ADC_Start(&hadc[i]);
-    while (HAL_ADC_PollForConversion(&hadc[i], 10) != HAL_OK)
+    ADC_HandleTypeDef hadc;
+    ADC_ChannelConfTypeDef sConfig;
+    switch(sensor.first){
+        case AdcNumber::ONE:
+            hadc = hadc1;
+            sConfig = sConfig1;
+            break;
+        case AdcNumber::THREE:
+            hadc = hadc3;
+            sConfig = sConfig3;
+            break;
+    }
+    sConfig.Channel = sensor.second;
+    sConfig.Rank = 1;
+    sConfig.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
+    HAL_ADC_ConfigChannel(&hadc, &sConfig);
+    HAL_ADC_Start(&hadc);
+    while (HAL_ADC_PollForConversion(&hadc, 10) != HAL_OK)
         ;
-    uint32_t adcValue = HAL_ADC_GetValue(&hadc[i]);
+    uint32_t adcValue = HAL_ADC_GetValue(&hadc);
     return adcValue;
 }
 

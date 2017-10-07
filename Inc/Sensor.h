@@ -22,8 +22,8 @@ private:
 
     std::array<std::pair<AdcNumber, uint32_t>, 4> sensors;
     std::array<std::pair<GPIO_TypeDef*, uint16_t>, 2> leds;
-    ADC_ChannelConfTypeDef sConfig[2];
-    ADC_HandleTypeDef hadc[2];
+    ADC_ChannelConfTypeDef sConfig1,sConfig3;
+    ADC_HandleTypeDef hadc1,hadc3;
     std::array<uint32_t, 4> light_value;
     std::array<uint32_t, 4> darkness_value;
     bool enable;
