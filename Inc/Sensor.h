@@ -10,6 +10,7 @@
 #include <array>
 #include <tuple>
 #include <utility>
+#include "util.h"
 #include "stm32f1xx_hal.h"
 
 enum class SensorNumber : int { FRONT_RIGHT, FRONT_LEFT, SIDE_RIGHT, SIDE_LEFT };

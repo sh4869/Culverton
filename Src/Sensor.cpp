@@ -1,7 +1,4 @@
 #include "Sensor.h"
-#include "util.h"
-#include <functional>
-
 // Defines
 #define SENSOR1_Pin GPIO_PIN_0
 #define SENSOR1_GPIO_Port GPIOC
@@ -44,6 +41,11 @@ void Sensor::init() {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    // SENSOR Setting
+    GPIO_InitStruct.Pin = SENSOR1_Pin | SENSOR4_Pin | SENSOR2_Pin | SENSOR3_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
     // SENSOR Settings
     hadc1.Instance = ADC1;
     hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
@@ -64,16 +66,13 @@ void Sensor::init() {
     hadc3.Init.DiscontinuousConvMode = DISABLE;
     hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
     hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    hadc3.Init.NbrOfConversion = 1;
+    hadc3.Init.NbrOfConversion = 2;
     HAL_ADC_Init(&hadc3);
     sConfig3.Channel = ADC_CHANNEL_10;
     sConfig3.Rank = 1;
     sConfig3.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
     HAL_ADC_ConfigChannel(&hadc3, &sConfig3);
 
-    GPIO_InitStruct.Pin = SENSOR1_Pin | SENSOR4_Pin | SENSOR2_Pin | SENSOR3_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
