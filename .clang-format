@@ -1,4 +1,8 @@
+BasedOnStyle: Google
 ColumnLimit: 100
 BraceWrapping:
     AfterEnum: true
+Cpp11BracedListStyle: false
 IndentWidth: 4
+AccessModifierOffset: -4
+BinPackParameters: false
