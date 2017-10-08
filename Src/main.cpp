@@ -43,9 +43,10 @@
 #include "Switch.h"
 #include "BatteryMonitor.h"
 #include "Sensor.h"
+#include "Encoder.h"
+#include "Uart.h"
 #include "stm32f1xx_hal.h"
 #include "tim.h"
-#include "usart.h"
 
 /* USER CODE BEGIN Includes */
 #include <math.h>
@@ -72,13 +73,6 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 
-// -------------------------------------------------
-#ifdef __GNUC__
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
-void __io_putchar(uint8_t ch) { HAL_UART_Transmit(&huart1, &ch, 1, 1); }
 // --------------------------------------------------
 
 void Delay(__IO uint32_t nCount) {
@@ -141,10 +135,6 @@ void unsetMotorMode() {
 
 // ------------- ENCODER FUNCTIONS -----------------
 
-uint32_t GetRightMotorEncoderValue() { return TIM2->CNT; }
-
-uint32_t GetLeftMotorEncoderValue() { return TIM3->CNT; }
-
 uint32_t encoder_r, encoder_l, oldencoder_r = 0, oldencoder_l = 0;
 float r_speed, l_speed;
 uint32_t target_value_r = 0, target_value_l = 0;
@@ -152,8 +142,11 @@ uint32_t current_value_r = 0, current_value_l = 0;
 uint32_t base_value_r = 0, base_value_l = 0;
 bool is_runnning = false;
 const int WALL_VALUE = 1500;
+Uart *uart;
 BatteryMonitor* bm;
 Sensor *sensors;
+Encoder *encoder;
+
 /* USER CODE END 0 */
 
 int main(void) {
@@ -181,7 +174,6 @@ int main(void) {
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
-  MX_USART1_UART_Init();
   MX_TIM8_Init();
   MX_TIM3_Init();
   MX_ADC2_Init();
@@ -192,14 +184,11 @@ int main(void) {
   /* USER CODE BEGIN 2 */
   bm = BatteryMonitor::GetInstance();
   sensors = Sensor::GetInstance();
+  encoder = Encoder::GetInstance();
+  uart = Uart::GetInstance();
+  encoder->Start();
   // Encoder Start
-  if (HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL) != HAL_OK) {
-    Error_Handler();
-  }
-  if (HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL) != HAL_OK) {
-    Error_Handler();
-  }
-  // Unset motors
+  //Unset motors
   unsetMotorMode();
   /* USER CODE END 2 */
 
@@ -235,12 +224,13 @@ int main(void) {
       }
       HAL_Delay(100);
       auto values = sensors->GetValue();
+      uart->Transmit("test");
       sprintf(str, "SENSOR:%ld,%ld,%ld,%ld\n", values[0],values[1],values[2],values[3]);
-      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-      sprintf(str, "%ld,%ld\n", encoder_r, encoder_l);
-      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+      uart->Transmit(str);
+      sprintf(str, "%ld,%ld\n", encoder->GetValue().right,encoder->GetValue().left);
+      uart->Transmit(str);
       sprintf(str,"%f\n",bm->GetValue());
-      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
+      uart->Transmit(str);
       break;
     }
     // RUN Mode
@@ -345,22 +335,9 @@ void SystemClock_Config(void) {
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == htim4.Instance) {
-    encoder_r = GetRightMotorEncoderValue();
-    encoder_l = GetLeftMotorEncoderValue();
-    if (target_value_r > current_value_r) {
-      current_value_r = current_value_r + (target_value_r - base_value_r) / 5;
-      Update_RightMotor_PWM(target_value_r);
-    } else {
-      base_value_r = current_value_r;
-    }
-    if (target_value_l > current_value_l) {
-      current_value_l = current_value_l + (target_value_l - base_value_l) / 5;
-      Update_LeftMotor_PWM(target_value_l);
-    } else {
-      base_value_l = current_value_l;
-    }
     bm->Scan();
     sensors->Scan();
+    encoder->Scan();
     Delay(1000);
   }
 }
