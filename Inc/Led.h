@@ -10,12 +10,14 @@
 #include <array>
 #include <utility>
 #include "stm32f1xx_hal.h"
+#include "util.h"
+#include "Types.h"
 
 enum class LedNumber : int { ONE, TWO, THREE, FOUR };
 
 class Led {
    private:
-    std::array<std::pair<GPIO_TypeDef*, uint16_t>, 4> gpio_pins;
+    std::array<GPIOPin, 4> gpio_pins;
     static Led* instance;
     Led();
     void init();
