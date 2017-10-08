@@ -77,6 +77,8 @@ void Encoder::init() {
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
     sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
     HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig);
+    TIM2->CNT = 0;
+    TIM3->CNT = 0;
 }
 
 Encoder* Encoder::GetInstance() {
