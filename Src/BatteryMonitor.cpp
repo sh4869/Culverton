@@ -30,7 +30,7 @@ void BatteryMonitor::init() {
     GPIO_InitStruct.Pin = BATTERY_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(BATTERY_GPIO_Port, &GPIO_InitStruct);
-
+    
     enable = true;
 }
 
@@ -46,9 +46,7 @@ void BatteryMonitor::read() {
     sConfig.Channel = adc_channel;
     sConfig.Rank = 1;
     sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-    if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
-        return;
-    }
+    HAL_ADC_ConfigChannel(&hadc2, &sConfig);
     HAL_ADC_Start(&hadc2);
     while (HAL_ADC_PollForConversion(&hadc2, 10) != HAL_OK)
         ;
