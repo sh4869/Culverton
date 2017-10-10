@@ -47,14 +47,14 @@ Led* Led::GetInstance() {
 }
 
 void Led::AllOn() {
-    for (uint i = 0; i < gpio_pins.size(); i++) {
-        GPIO::On(gpio_pins[i]);
+    for (GPIOPin pin : gpio_pins) {
+        GPIO::On(pin);
     }
 }
 
 void Led::AllOff() {
-    for (uint i = 0; i < gpio_pins.size(); i++) {
-        GPIO::Off(gpio_pins[i]);
+    for (GPIOPin pin : gpio_pins) {
+        GPIO::Off(pin);
     }
 }
 
