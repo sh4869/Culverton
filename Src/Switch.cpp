@@ -5,12 +5,12 @@
 #define SW2_Pin GPIO_PIN_10
 #define SW2_GPIO_Port GPIOC
 
-Switch * Switch::instance = nullptr;
+Switch* Switch::instance = nullptr;
 
 Switch::Switch() {}
 
 void Switch::init() {
-    gpio_pins = {std::make_pair(SW1_GPIO_Port, SW1_Pin), std::make_pair(SW2_GPIO_Port, SW2_Pin)};
+    gpio_pins = { GPIOPinPair(SW1_GPIO_Port, SW1_Pin), GPIOPinPair(SW2_GPIO_Port, SW2_Pin) };
     GPIO_InitTypeDef GPIO_InitStruct;
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -30,17 +30,17 @@ void Switch::init() {
 Switch::~Switch() { delete instance; }
 
 Switch* Switch::GetInstance() {
-    if(instance == nullptr){
+    if (instance == nullptr) {
         instance = new Switch();
         instance->init();
     }
     return instance;
 }
 
-bool Switch::IsPressed(SwitchNumber number){
+bool Switch::IsPressed(SwitchNumber number) {
     int index = static_cast<int>(number);
     // TODO チャタリング対策したほうが良さそう？
-    if(HAL_GPIO_ReadPin(gpio_pins[index].first,gpio_pins[index].second) == GPIO_PIN_SET){
+    if (HAL_GPIO_ReadPin(gpio_pins[index].first, gpio_pins[index].second) == GPIO_PIN_SET) {
         return true;
     }
     return false;

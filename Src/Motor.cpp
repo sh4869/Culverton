@@ -20,11 +20,11 @@ Motor* Motor::instance = nullptr;
 Motor::Motor() {}
 
 void Motor::init() {
-    stbyPin = std::make_pair(MOTOR_STBY_GPIO_Port, MOTOR_STBY_Pin);
-    rightPins.In1Pin = std::make_pair(MOTOR_RIGHT_IN1_GPIO_Port, MOTOR_RIGHT_IN1_Pin);
-    rightPins.In2Pin = std::make_pair(MOTOR_RIGHT_IN2_GPIO_Port, MOTOR_RIGHT_IN2_Pin);
-    leftPins.In1Pin = std::make_pair(MOTOR_LEFT_IN1_GPIO_Port, MOTOR_LEFT_IN1_Pin);
-    leftPins.In2Pin = std::make_pair(MOTOR_LEFT_IN2_GPIO_Port, MOTOR_LEFT_IN2_Pin);
+    stbyPin = GPIOPinPair(MOTOR_STBY_GPIO_Port, MOTOR_STBY_Pin);
+    rightPins.In1Pin = GPIOPinPair(MOTOR_RIGHT_IN1_GPIO_Port, MOTOR_RIGHT_IN1_Pin);
+    rightPins.In2Pin = GPIOPinPair(MOTOR_RIGHT_IN2_GPIO_Port, MOTOR_RIGHT_IN2_Pin);
+    leftPins.In1Pin = GPIOPinPair(MOTOR_LEFT_IN1_GPIO_Port, MOTOR_LEFT_IN1_Pin);
+    leftPins.In2Pin = GPIOPinPair(MOTOR_LEFT_IN2_GPIO_Port, MOTOR_LEFT_IN2_Pin);
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
 

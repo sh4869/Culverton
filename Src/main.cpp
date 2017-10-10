@@ -42,6 +42,7 @@
 #include "Led.h"
 #include "Switch.h"
 #include "BatteryMonitor.h"
+#include "Motor.h"
 #include "Sensor.h"
 #include "Encoder.h"
 #include "Uart.h"
@@ -199,7 +200,7 @@ int main(void) {
   
   Led *led = Led::GetInstance();
   Switch* sw = Switch::GetInstance();
-
+  Motor* motor = Motor::GetInstance();
   bool pressed = false;
   while (1) {
     /* USER CODE END WHILE */
@@ -224,7 +225,6 @@ int main(void) {
       }
       HAL_Delay(100);
       auto values = sensors->GetValue();
-      uart->Transmit("test");
       sprintf(str, "SENSOR:%ld,%ld,%ld,%ld\n", values[0],values[1],values[2],values[3]);
       uart->Transmit(str);
       sprintf(str, "%ld,%ld\n", encoder->GetValue().right,encoder->GetValue().left);
@@ -239,9 +239,7 @@ int main(void) {
       Turn_Around_RightMotor();
       // Start
       if (!is_runnning) {
-        HAL_Delay(3000);
-        target_value_r = 150;
-        target_value_l = 150;
+        motor->Start(200);
         is_runnning = true;
       }
       /*
@@ -336,7 +334,7 @@ void SystemClock_Config(void) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == htim4.Instance) {
     bm->Scan();
-    sensors->Scan();
+    Sensor::GetInstance()->Scan();
     encoder->Scan();
     Delay(1000);
   }

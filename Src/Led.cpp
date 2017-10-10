@@ -18,8 +18,8 @@ Led::Led() {}
 
 void Led::init() {
     gpio_pins = {
-        std::make_pair(IFLED1_GPIO_Port, IFLED1_Pin), std::make_pair(IFLED2_GPIO_Port, IFLED2_Pin),
-        std::make_pair(IFLED3_GPIO_Port, IFLED3_Pin), std::make_pair(IFLED4_GPIO_Port, IFLED4_Pin),
+        GPIOPinPair(IFLED1_GPIO_Port, IFLED1_Pin),GPIOPinPair(IFLED2_GPIO_Port, IFLED2_Pin),
+        GPIOPinPair(IFLED3_GPIO_Port, IFLED3_Pin), GPIOPinPair(IFLED4_GPIO_Port, IFLED4_Pin),
     };
     GPIO_InitTypeDef GPIO_InitStruct;
 

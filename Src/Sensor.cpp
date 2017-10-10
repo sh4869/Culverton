@@ -23,8 +23,8 @@ void Sensor::init() {
                 std::make_pair(AdcNumber::ONE, ADC_CHANNEL_12),
                 std::make_pair(AdcNumber::THREE, ADC_CHANNEL_13) };
 
-    leds = { std::make_pair(SENSORLED1_GPIO_Port, SENSORLED1_Pin),
-             std::make_pair(SENSORLED2_GPIO_Port, SENSORLED2_Pin) };
+    leds = { GPIOPinPair(SENSORLED1_GPIO_Port, SENSORLED1_Pin),
+             GPIOPinPair(SENSORLED2_GPIO_Port, SENSORLED2_Pin) };
 
     enable = false;
 

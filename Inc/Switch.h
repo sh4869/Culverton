@@ -8,6 +8,7 @@
 #define SWITCH_H_
 
 #include "stm32f1xx_hal.h"
+#include "Types.h"
 #include <array>
 #include <utility>
 
@@ -15,7 +16,7 @@ enum class SwitchNumber : int { ONE, TWO };
 
 class Switch {
     private:
-        std::array<std::pair<GPIO_TypeDef*, uint16_t>, 2> gpio_pins;
+        std::array<GPIOPin, 2> gpio_pins;
         static Switch* instance;
         Switch();
         void init();
