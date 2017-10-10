@@ -18,7 +18,7 @@ Sensor* Sensor::instance = nullptr;
 Sensor::Sensor() {}
 
 void Sensor::init() {
-    sensors = { std::make_pair(AdcNumber::THREE, ADC_CHANNEL_10),
+    sensors = { std::make_pair(AdcNumber::ONE, ADC_CHANNEL_10),
                 std::make_pair(AdcNumber::ONE, ADC_CHANNEL_11),
                 std::make_pair(AdcNumber::ONE, ADC_CHANNEL_12),
                 std::make_pair(AdcNumber::THREE, ADC_CHANNEL_13) };
@@ -73,17 +73,15 @@ void Sensor::init() {
     sConfig3.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
     HAL_ADC_ConfigChannel(&hadc3, &sConfig3);
 
-
     HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
     enable = true;
 }
 
-uint32_t Sensor::getADCValue(
-    std::pair<AdcNumber,uint32_t> sensor) {
+uint32_t Sensor::getADCValue(std::pair<AdcNumber, uint32_t> sensor) {
     ADC_HandleTypeDef hadc;
     ADC_ChannelConfTypeDef sConfig;
-    switch(sensor.first){
+    switch (sensor.first) {
         case AdcNumber::ONE:
             hadc = hadc1;
             sConfig = sConfig1;
@@ -136,13 +134,11 @@ Sensor* Sensor::GetInstance() {
     return instance;
 }
 
-std::array<uint32_t, 4> Sensor::GetValue(){
-    std::array<uint32_t,4> value = {
-        light_value[0] - darkness_value[0],
-        light_value[1] - darkness_value[1],
-        light_value[2] - darkness_value[2],
-        light_value[3] - darkness_value[3]
-    };
+std::array<uint32_t, 4> Sensor::GetValue() {
+    std::array<uint32_t, 4> value = { light_value[0] - darkness_value[0],
+                                      light_value[1] - darkness_value[1],
+                                      light_value[2] - darkness_value[2],
+                                      light_value[3] - darkness_value[3] };
     return value;
 }
 
