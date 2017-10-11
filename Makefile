@@ -35,7 +35,8 @@ Drivers \
 Application \
 Application/User \
 Drivers/STM32F1xx_HAL_Driver \
-Application/MAKEFILE
+Application/MAKEFILE \
+../MazeSlover/MazeSlover
 
 # firmware library path
 PERIFLIB_PATH = 
@@ -73,7 +74,8 @@ Src/adc.c \
 Src/tim.c
 
 CPP_SOURCES = \
-$(wildcard Src/*.cpp)
+$(wildcard Src/*.cpp) \
+$(wildcard ../MazeSlover/MazeSlover/*.cpp)
 
 # ASM sources
 ASM_SOURCES =  \
@@ -134,7 +136,8 @@ C_INCLUDES =  \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 -IDrivers/CMSIS/Include \
--IUser
+-I../MazeSlover/MazeSlover \
+-IUser \
 
 
 # compile gcc flags
