@@ -34,6 +34,7 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx.h"
 #include "stm32f1xx_it.h"
+#include "Timer.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -177,7 +178,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  Timer::Interrupt();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

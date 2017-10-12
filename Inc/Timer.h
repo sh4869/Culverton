@@ -1,18 +1,21 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
+#include "BatteryMonitor.h"
+#include "Encoder.h"
+#include "Sensor.h"
 #include "stm32f1xx_hal.h"
+
+enum class TimerMode : int { NONE, SCAN };
 
 class Timer {
 private:
-    static Timer* instance;
-    TIM_HandleTypeDef htim4;
-    Timer();
-    void init();
+    static BatteryMonitor *bm;
+    static Sensor *sensor;
+    static Encoder *encoder;
 public:
-    static Timer* GetInstance();
-    void Start();
-    void Stop();
+    static void Interrupt();
+    static TimerMode Mode;
 };
 
 #endif
