@@ -20,13 +20,16 @@ Motor* Motor::instance = nullptr;
 Motor::Motor() {}
 
 void Motor::init() {
+    // Variable Iinitialization
     stbyPin = GPIOPinPair(MOTOR_STBY_GPIO_Port, MOTOR_STBY_Pin);
     rightPins.In1Pin = GPIOPinPair(MOTOR_RIGHT_IN1_GPIO_Port, MOTOR_RIGHT_IN1_Pin);
     rightPins.In2Pin = GPIOPinPair(MOTOR_RIGHT_IN2_GPIO_Port, MOTOR_RIGHT_IN2_Pin);
     leftPins.In1Pin = GPIOPinPair(MOTOR_LEFT_IN1_GPIO_Port, MOTOR_LEFT_IN1_Pin);
     leftPins.In2Pin = GPIOPinPair(MOTOR_LEFT_IN2_GPIO_Port, MOTOR_LEFT_IN2_Pin);
+    
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_TIM8_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStruct;
     GPIO_InitStruct.Pin = MOTOR_STBY_Pin | MOTOR_RIGHT_IN2_Pin;
@@ -71,6 +74,9 @@ void Motor::init() {
     sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
     sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
     HAL_TIMEx_ConfigBreakDeadTime(&htim8, &sBreakDeadTimeConfig);
+    
+    HAL_NVIC_SetPriority(TIM8_BRK_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM8_BRK_IRQn);
 }
 
 void Motor::updatePWM(uint32_t channel, uint32_t pulse) {

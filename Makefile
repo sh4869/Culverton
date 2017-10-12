@@ -74,6 +74,7 @@ Src/tim.c
 
 CPP_SOURCES = \
 $(wildcard Src/*.cpp) \
+$(wildcard Src/**/*.cpp) \
 $(wildcard ../MazeSlover/MazeSlover/*.cpp)
 
 # ASM sources
@@ -131,12 +132,13 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
+-IInc/Peripheral \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 -IDrivers/CMSIS/Include \
 -I../MazeSlover/MazeSlover \
--IUser \
+-IUser
 
 
 # compile gcc flags

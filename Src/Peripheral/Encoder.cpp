@@ -98,7 +98,7 @@ void Encoder::Stop() {
     HAL_TIM_Encoder_Stop(&htim2, TIM_CHANNEL_ALL);
     HAL_TIM_Encoder_Stop(&htim3, TIM_CHANNEL_ALL);
 }
-
+// いらない……
 void Encoder::Scan() {
     value.right = TIM2->CNT;
     value.left = TIM3->CNT;
