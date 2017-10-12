@@ -19,7 +19,7 @@ Sensor::Sensor() {}
 
 void Sensor::init() {
     sensors = { std::make_pair(AdcNumber::ONE, ADC_CHANNEL_10),
-                std::make_pair(AdcNumber::ONE, ADC_CHANNEL_11),
+                std::make_pair(AdcNumber::THREE, ADC_CHANNEL_11),
                 std::make_pair(AdcNumber::ONE, ADC_CHANNEL_12),
                 std::make_pair(AdcNumber::THREE, ADC_CHANNEL_13) };
 
@@ -72,9 +72,6 @@ void Sensor::init() {
     sConfig3.Rank = 1;
     sConfig3.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
     HAL_ADC_ConfigChannel(&hadc3, &sConfig3);
-
-    HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
     enable = true;
 }
 
@@ -103,26 +100,21 @@ uint32_t Sensor::getADCValue(std::pair<AdcNumber, uint32_t> sensor) {
 }
 
 void Sensor::read() {
+    
     HAL_GPIO_WritePin(leds[0].first, leds[0].second, GPIO_PIN_SET);
-    Util::Delay(1000);
-    light_value[0] = getADCValue(sensors[0]);
-    Util::Delay(1000);
-    light_value[1] = getADCValue(sensors[1]);
-    HAL_GPIO_WritePin(leds[0].first, leds[0].second, GPIO_PIN_RESET);
-    Util::Delay(1000);
-    darkness_value[0] = getADCValue(sensors[0]);
-    Util::Delay(1000);
-    darkness_value[1] = getADCValue(sensors[1]);
-
     HAL_GPIO_WritePin(leds[1].first, leds[1].second, GPIO_PIN_SET);
-    Util::Delay(1000);
+    Util::Delay(100);
+    light_value[0] = getADCValue(sensors[0]);
+    light_value[1] = getADCValue(sensors[1]);
     light_value[2] = getADCValue(sensors[2]);
-    Util::Delay(1000);
     light_value[3] = getADCValue(sensors[3]);
+    
+    HAL_GPIO_WritePin(leds[0].first, leds[0].second, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(leds[1].first, leds[1].second, GPIO_PIN_RESET);
-    Util::Delay(1000);
+    Util::Delay(100);
+    darkness_value[0] = getADCValue(sensors[0]);
+    darkness_value[1] = getADCValue(sensors[1]);
     darkness_value[2] = getADCValue(sensors[2]);
-    Util::Delay(1000);
     darkness_value[3] = getADCValue(sensors[3]);
 }
 
