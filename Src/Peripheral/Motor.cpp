@@ -79,7 +79,16 @@ void Motor::init() {
     HAL_NVIC_EnableIRQ(TIM8_BRK_IRQn);
 }
 
-void Motor::updatePWM(uint32_t channel, uint32_t pulse) {
+void Motor::UpdatePWM(MotorPosition pos, uint32_t pulse) {
+    uint32_t channel;
+    switch(pos){
+        case MotorPosition::RIGHT:
+            channel = rightChannel;
+            break;
+        case MotorPosition::LEFT:
+            channel = leftChannel;
+            break;
+    }
     sConfigOC.Pulse = pulse;
     HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, channel);
     HAL_TIM_PWM_Start(&htim8, channel);
@@ -128,17 +137,21 @@ void Motor::SetDirection(MotorPosition pos, MotorDirection dir) {
 }
 
 // あくまでPWMを止める形で
-void Motor::Stop() {
-    HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_2);
+void Motor::Stop(MotorPosition pos) {
+    switch(pos){
+        case MotorPosition::RIGHT:
+            HAL_TIM_PWM_Stop(&htim8, rightChannel);
+            break;
+        case MotorPosition::LEFT:
+            HAL_TIM_PWM_Stop(&htim8, leftChannel);
+            break;
+    }
 }
 
-void Motor::Start(uint32_t pulse) {
+void Motor::Start(MotorPosition pos,uint32_t pulse) {
     if (!is_standby) {
         SetStandby();
     }
-    SetDirection(MotorPosition::RIGHT, MotorDirection::FRONT);
-    SetDirection(MotorPosition::LEFT, MotorDirection::FRONT);
-    updatePWM(rightChannel, pulse);
-    updatePWM(leftChannel, pulse);
+    SetDirection(pos, MotorDirection::FRONT);
+    UpdatePWM(pos, pulse);
 }

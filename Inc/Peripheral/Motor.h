@@ -17,7 +17,6 @@ private:
     static Motor* instance;
     Motor();
     void init();
-    void updatePWM(uint32_t channel, uint32_t pulse);
 
     TIM_HandleTypeDef htim8;
     TIM_MasterConfigTypeDef sMasterConfig;
@@ -34,8 +33,9 @@ public:
     void SetStandby();
     void UnSetStandby();
     void SetDirection(MotorPosition pos, MotorDirection dir);
-    void Stop();
-    void Start(uint32_t pulse);
+    void Stop(MotorPosition pos);
+    void Start(MotorPosition pos,uint32_t pulse);
+    void UpdatePWM(MotorPosition pos, uint32_t pulse);
 };
 
 #endif
