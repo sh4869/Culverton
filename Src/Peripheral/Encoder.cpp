@@ -42,7 +42,7 @@ void Encoder::init() {
     htim2.Init.Period = 65534;
     htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-    sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+    sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
     sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
     sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
     sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -98,13 +98,30 @@ void Encoder::Stop() {
     HAL_TIM_Encoder_Stop(&htim2, TIM_CHANNEL_ALL);
     HAL_TIM_Encoder_Stop(&htim3, TIM_CHANNEL_ALL);
 }
-// いらない……
+
 void Encoder::Scan() {
-    value.right = TIM2->CNT;
-    value.left = TIM3->CNT;
+    uint16_t enc_right,enc_left;
+    enc_right = TIM2->CNT;
+    TIM2->CNT = 0;
+    enc_left = TIM3->CNT;
+    TIM3->CNT = 0;
+    // 秒速
+    if(enc_right > 32767){
+        value.right = -(int16_t)enc_right;
+    } else {
+        value.right = -enc_right;
+    }
+    if(enc_left > 32767){
+        value.left = (int16_t)enc_left;
+    } else {
+        value.left = enc_left;
+    }
 }
 
 EncoderValue Encoder::GetValue() {
-    // TODO: とりあえず実直に値を返しているので修正したほうが良さそう。
     return value;
+}
+
+EncoderVelocity Encoder::GetVelocity(){
+    return velocity;
 }
