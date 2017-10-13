@@ -133,6 +133,7 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -IInc \
 -IInc/Peripheral \
+-IInc/Controller \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
