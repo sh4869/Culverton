@@ -67,7 +67,7 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c \
 $(wildcard User/*.c) \
 Src/stm32f1xx_it.c \
 Src/stm32f1xx_hal_msp.c \
-Src/syscalls.c \
+Src/External/syscalls.c \
 Src/system_stm32f1xx.c \
 Src/Peripheral/adc.c \
 Src/Peripheral/tim.c
