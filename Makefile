@@ -69,8 +69,8 @@ Src/stm32f1xx_it.c \
 Src/stm32f1xx_hal_msp.c \
 Src/syscalls.c \
 Src/system_stm32f1xx.c \
-Src/adc.c \
-Src/tim.c
+Src/Peripheral/adc.c \
+Src/Peripheral/tim.c
 
 CPP_SOURCES = \
 $(wildcard Src/*.cpp) \
