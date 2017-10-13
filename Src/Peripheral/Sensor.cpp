@@ -100,17 +100,16 @@ uint32_t Sensor::getADCValue(std::pair<AdcNumber, uint32_t> sensor) {
 }
 
 void Sensor::read() {
-    
-    HAL_GPIO_WritePin(leds[0].first, leds[0].second, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(leds[1].first, leds[1].second, GPIO_PIN_SET);
+    GPIO::On(leds[0]);
+    GPIO::On(leds[1]);
     Util::Delay(100);
     light_value[0] = getADCValue(sensors[0]);
     light_value[1] = getADCValue(sensors[1]);
     light_value[2] = getADCValue(sensors[2]);
     light_value[3] = getADCValue(sensors[3]);
-    
-    HAL_GPIO_WritePin(leds[0].first, leds[0].second, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(leds[1].first, leds[1].second, GPIO_PIN_RESET);
+
+    GPIO::Off(leds[0]);
+    GPIO::Off(leds[1]);
     Util::Delay(100);
     darkness_value[0] = getADCValue(sensors[0]);
     darkness_value[1] = getADCValue(sensors[1]);
@@ -136,4 +135,11 @@ std::array<uint32_t, 4> Sensor::GetValue() {
 
 void Sensor::Scan() {
     if (enable) read();
+}
+void Sensor::LedOn(SensorLedNumber number){
+    GPIO::On(leds[static_cast<int>(number)]);
+}
+
+void Sensor::LedOff(SensorLedNumber number){
+    GPIO::Off(leds[static_cast<int>(number)]);
 }

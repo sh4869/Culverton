@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 #include "util.h"
+#include "Types.h"
 #include "stm32f1xx_hal.h"
 
 enum class SensorNumber : int { FRONT_RIGHT, FRONT_LEFT, SIDE_RIGHT, SIDE_LEFT };
@@ -22,7 +23,7 @@ private:
     static Sensor* instance;
 
     std::array<std::pair<AdcNumber, uint32_t>, 4> sensors;
-    std::array<std::pair<GPIO_TypeDef*, uint16_t>, 2> leds;
+    std::array<GPIOPin, 2> leds;
     ADC_ChannelConfTypeDef sConfig1,sConfig3;
     ADC_HandleTypeDef hadc1,hadc3;
     std::array<uint32_t, 4> light_value;
@@ -38,6 +39,8 @@ public:
     static Sensor* GetInstance();
     std::array<uint32_t, 4> GetValue();
     void Scan();
+    void LedOn(SensorLedNumber number);
+    void LedOff(SensorLedNumber number);
 };
 
 #endif
