@@ -53,6 +53,9 @@
 #include "Timer.h"
 #include "Uart.h"
 
+#include "MotorController.h"
+#include "MouseSystem.h"
+
 #include "MapController.h"
 
 #include <queue>
@@ -76,55 +79,34 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
-uint32_t encoder_r, encoder_l, oldencoder_r = 0, oldencoder_l = 0;
-float r_speed, l_speed;
-uint32_t target_value_r = 0, target_value_l = 0;
-uint32_t current_value_r = 0, current_value_l = 0;
-uint32_t base_value_r = 0, base_value_l = 0;
-bool is_runnning = false;
-const int WALL_VALUE = 1500;
-Uart *uart;
-BatteryMonitor *bm;
-//Timer *timer4;
-Sensor *sensors;
-Encoder *encoder;
-
 /* USER CODE END 0 */
 
 int main(void) {
     HAL_Init();
     SystemClock_Config();
-    MX_ADC1_Init();
-    MX_ADC2_Init();
-    MX_ADC3_Init();
-    MX_TIM8_Init();
-    
+    MouseSystem *mouseSystem = new MouseSystem();
     /* USER CODE BEGIN 2 */
-    bm = BatteryMonitor::GetInstance();
-    sensors = Sensor::GetInstance();
-    encoder = Encoder::GetInstance();
-    uart = Uart::GetInstance();
-    auto mc = MapController::GetInstance();
-    mc->InitMap();
-    mc->SetGoal({ std::make_pair(15, 0) });
-    encoder->Start();
-    // Encoder Start
-    // Unset motors
-    /* USER CODE END 2 */
+    BatteryMonitor *bm = BatteryMonitor::GetInstance();
+    Sensor *sensors = Sensor::GetInstance();
+    Encoder *encoder = Encoder::GetInstance();
+    Uart *uart = Uart::GetInstance();
+    Led *led = Led::GetInstance();
+    Switch *sw = Switch::GetInstance();
+    Motor *motor = Motor::GetInstance();
+    MotorController *mc = MotorController::GetInstance();
+
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     int mode = 0;
     char str[1000];
-
-    Led *led = Led::GetInstance();
-    Switch *sw = Switch::GetInstance();
-    Motor *motor = Motor::GetInstance();
     bool pressed = false;
+
+    // パフォーマンス的な
+    mouseSystem->StartMouse();
+
     while (1) {
         /* USER CODE END WHILE */
-
         /* USER CODE BEGIN 3 */
         // Mode Switch
         if (pressed == false && sw->IsPressed(SwitchNumber::ONE)) {
@@ -140,6 +122,7 @@ int main(void) {
             }
             // Sensor Mode
             case 1: {
+                encoder->Start();
                 Timer::Mode = TimerMode::SCAN;
                 HAL_Delay(100);
                 auto values = sensors->GetValue();
@@ -148,46 +131,25 @@ int main(void) {
                 uart->Transmit(str);
                 sprintf(str, "%ld,%ld\n", encoder->GetValue().right, encoder->GetValue().left);
                 uart->Transmit(str);
+                sprintf(str, "%f,%f\n",encoder->GetVelocity().right,encoder->GetVelocity().left);
+                //uart->Transmit(str);
                 sprintf(str, "%f\n", bm->GetValue());
                 uart->Transmit(str);
                 break;
             }
             // RUN Mode
             case 2: {
-                // Start
-                if (!is_runnning) {
-                    motor->Start(200);
-                    is_runnning = true;
-                }
                 /*
-                float para = ((float)sensor[2] - 200.0F) / 25.0F - (float)sensor[3] / 25.0F;
-                sprintf(str, "%f\n", para);
-                HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-
-                target_value_r = 150 + para;
-                target_value_l = 150 - para;
-
-                // HAL_Delay(100);
-                sprintf(str, "SENSOR:%ld,%ld\n", sensor->GetValue()[0], sensor->GetValue()[1]);
-                HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-                sprintf(str, "TARGET:%ld,%ld\n", target_value_r, target_value_l);
-                HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), -1);
-
-                if (sensor[2] > WALL_VALUE && sensor[3] > WALL_VALUE) {
-                  mode++;
-                }
+                motor->Start(MotorPosition::RIGHT,200);
+                motor->Start(MotorPosition::LEFT,200);
                 */
+                mc->Straight();
+                mode++;
                 break;
             }
             case 3:
-                motor->Stop();
-                target_value_r = 0;
-                target_value_l = 0;
-                current_value_r = 0;
-                current_value_l = 0;
-                base_value_r = 0;
-                base_value_l = 0;
-                is_runnning = false;
+                motor->Stop(MotorPosition::RIGHT);
+                motor->Stop(MotorPosition::LEFT);
                 break;
         }
     }
