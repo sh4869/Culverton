@@ -1,11 +1,9 @@
 #include "Timer.h"
-#include "BatteryMonitor.h"
-#include "Encoder.h"
-#include "Sensor.h"
 
 BatteryMonitor* Timer::bm = BatteryMonitor::GetInstance();
 Sensor* Timer::sensor = Sensor::GetInstance();
 Encoder* Timer::encoder = Encoder::GetInstance();
+MotorController* Timer::motorController = MotorController::GetInstance();
 TimerMode Timer::Mode = TimerMode::NONE;
 
 void Timer::Interrupt() {
@@ -17,6 +15,7 @@ void Timer::Interrupt() {
             bm->Scan();
             sensor->Scan();
             encoder->Scan();
+            motorController->Scan();
             break;
         }
     }

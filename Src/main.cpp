@@ -40,8 +40,8 @@
 #include "stm32f1xx_hal.h"
 
 #include "adc.h"
-#include "tim.h"
 #include "main.h"
+#include "tim.h"
 
 // Peripherals
 #include "BatteryMonitor.h"
@@ -55,6 +55,7 @@
 
 #include "MotorController.h"
 #include "MouseSystem.h"
+#include "SensorController.h"
 
 #include "MapController.h"
 
@@ -94,16 +95,17 @@ int main(void) {
     Switch *sw = Switch::GetInstance();
     Motor *motor = Motor::GetInstance();
     MotorController *mc = MotorController::GetInstance();
-
+    SensorController *sc = SensorController::GetInstance();
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     int mode = 0;
     char str[1000];
     bool pressed = false;
-
+    bool first = true;
     // パフォーマンス的な
     mouseSystem->StartMouse();
+    encoder->Start();
 
     while (1) {
         /* USER CODE END WHILE */
@@ -122,34 +124,110 @@ int main(void) {
             }
             // Sensor Mode
             case 1: {
-                encoder->Start();
                 Timer::Mode = TimerMode::SCAN;
-                HAL_Delay(100);
-                auto values = sensors->GetValue();
-                sprintf(str, "SENSOR:%ld,%ld,%ld,%ld\n", values[0], values[1], values[2],
-                        values[3]);
+                if ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
+                    while ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
+                        sprintf(str, "%f\n", bm->GetValue() * (8.0F / 5.0F));
+                        uart->Transmit(str);
+                        led->AllOn();
+                        HAL_Delay(1000);
+                        led->AllOff();
+                        HAL_Delay(1000);
+                    }
+                }
+                led->OnOnly(LedNumber::TWO);
+                if (first) {
+                    while (1) {
+                        if (sw->IsPressed(SwitchNumber::TWO)) {
+                            led->AllOn();
+                            HAL_Delay(1000);
+                            led->AllOff();
+                            for (volatile int i = 0; i < 4; i++) {
+                                sc->SetSensorNormal(static_cast<SensorNumber>(i));
+                            }
+                            first = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (!sc->IsSetHighValue(SensorNumber::FRONT_RIGHT)) {
+                    led->AllOff();
+                    led->On(LedNumber::ONE);
+                    led->On(LedNumber::TWO);
+                    while (1) {
+                        if (sw->IsPressed(SwitchNumber::TWO)) {
+                            while (!sw->IsPressed(SwitchNumber::TWO))
+                                ;
+                            led->AllOn();
+                            HAL_Delay(1000);
+                            sc->SetSensorHigh(SensorNumber::FRONT_RIGHT);
+                            led->AllOff();
+                            break;
+                        }
+                    }
+                }
+                if (!sc->IsSetHighValue(SensorNumber::FRONT_LEFT)) {
+                    led->AllOff();
+                    led->On(LedNumber::THREE);
+                    led->On(LedNumber::FOUR);
+                    while (1) {
+                        if (sw->IsPressed(SwitchNumber::TWO)) {
+                            while (!sw->IsPressed(SwitchNumber::TWO))
+                                ;
+                            led->AllOn();
+                            HAL_Delay(1000);
+                            sc->SetSensorHigh(SensorNumber::FRONT_LEFT);
+                            led->AllOff();
+                            break;
+                        }
+                    }
+                }
+                sprintf(str, "%ld,%ld\n", sc->GetDiffFromNormal(SensorNumber::FRONT_RIGHT),
+                        sc->GetDiffFromNormal(SensorNumber::FRONT_LEFT));
                 uart->Transmit(str);
-                sprintf(str, "%ld,%ld\n", encoder->GetValue().right, encoder->GetValue().left);
+                /*
+                sprintf(str, "%f,%f,", static_cast<float>(encoder->GetValue().right),
+                static_cast<float>(encoder->GetValue().left));
                 uart->Transmit(str);
-                sprintf(str, "%f,%f\n",encoder->GetVelocity().right,encoder->GetVelocity().left);
-                //uart->Transmit(str);
+
+                sprintf(str,
+                "%f,%f\n",mc->GetCurrentDistance().right,mc->GetCurrentDistance().left);
+                uart->Transmit(str);
+                */
+                /*
                 sprintf(str, "%f\n", bm->GetValue());
                 uart->Transmit(str);
+                */
                 break;
             }
             // RUN Mode
             case 2: {
-                /*
-                motor->Start(MotorPosition::RIGHT,200);
-                motor->Start(MotorPosition::LEFT,200);
-                */
+                HAL_Delay(1000);
+                while (1) {
+                    auto value = sensors->GetValue();
+                    if (value[static_cast<int>(SensorNumber::FRONT_LEFT)] > 600) {
+                        for (int i = 0; i < 2; i++) {
+                            led->AllOn();
+                            HAL_Delay(500);
+                            led->AllOff();
+                            HAL_Delay(500);
+                        }
+                        break;
+                    }
+                }
                 mc->Straight();
+
+                /*
+                HAL_Delay(1000);
+                mc->Straight();
+                HAL_Delay(1000);
+                mc->Straight();
+                */
                 mode++;
                 break;
             }
             case 3:
-                motor->Stop(MotorPosition::RIGHT);
-                motor->Stop(MotorPosition::LEFT);
                 break;
         }
     }
@@ -208,9 +286,7 @@ void SystemClock_Config(void) {
 
 /* USER CODE BEGIN 4 */
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-
-}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {}
 
 /* USER CODE END 4 */
 

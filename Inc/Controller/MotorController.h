@@ -4,6 +4,7 @@
 #include "Encoder.h"
 #include "Motor.h"
 #include "Variables.h"
+#include "SensorController.h"
 
 enum class MotorControlPosition : int { RIGHT, LEFT, BOTH };
 
@@ -20,6 +21,7 @@ private:
 
     Motor* motor;
     Encoder* encoder;
+    SensorController* sensorController;
     float rightDistance, leftDistance;
 
 public:

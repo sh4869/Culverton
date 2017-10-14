@@ -8,6 +8,7 @@ MotorController::MotorController() {}
 void MotorController::init() {
     motor = Motor::GetInstance();
     encoder = Encoder::GetInstance();
+    sensorController = SensorController::GetInstance();
     reset();
 }
 
@@ -40,7 +41,7 @@ void MotorController::RampUp(MotorControlPosition pos, uint32_t target) {
     }
     for (volatile int i = 0; i < 100; i++) {
         value = static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * target);
-        switch(pos){
+        switch (pos) {
             case MotorControlPosition::RIGHT:
                 motor->UpdatePWM(MotorPosition::RIGHT, value);
                 break;
@@ -55,11 +56,11 @@ void MotorController::RampUp(MotorControlPosition pos, uint32_t target) {
     }
 }
 
-void MotorController::RampDown(MotorControlPosition pos, uint32_t start){
+void MotorController::RampDown(MotorControlPosition pos, uint32_t start) {
     int value;
     for (volatile int i = 99; i >= 0; i--) {
         value = static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * start);
-        switch(pos){
+        switch (pos) {
             case MotorControlPosition::RIGHT:
                 motor->UpdatePWM(MotorPosition::RIGHT, value);
                 break;
@@ -72,7 +73,7 @@ void MotorController::RampDown(MotorControlPosition pos, uint32_t start){
                 break;
         }
     }
-    switch(pos){
+    switch (pos) {
         case MotorControlPosition::RIGHT:
             motor->Stop(MotorPosition::RIGHT);
             break;
@@ -91,21 +92,41 @@ void MotorController::Straight() {
     motor->Start(MotorPosition::RIGHT, 0);
     motor->Start(MotorPosition::LEFT, 0);
     int target = 100;
-    for(volatile int i = 0;i<100;i++){
-        motor->UpdatePWM(MotorPosition::RIGHT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * target));
-        motor->UpdatePWM(MotorPosition::LEFT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * target));
+    int lefttarget = target;
+    for (volatile int i = 0; i < 100; i++) {
+        motor->UpdatePWM(
+            MotorPosition::RIGHT,
+            static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * target));
+        motor->UpdatePWM(
+            MotorPosition::LEFT,
+            static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * lefttarget));
     }
     int rightCount = 100, leftCount = 100;
     while (1) {
-        if (rightDistance > WallWidth + PoleWidth) {
-            motor->UpdatePWM(MotorPosition::RIGHT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(rightCount) / 100.0F) * target));
-            rightCount--;
-            if(rightCount >= 0) break;
+        auto cte = sensorController->GetDiffFromNormal(SensorNumber::FRONT_RIGHT) -
+                   sensorController->GetDiffFromNormal(SensorNumber::FRONT_LEFT);
+        float pgain = static_cast<float>(cte);
+        if (rightCount == 100) {
+            motor->UpdatePWM(MotorPosition::RIGHT, target + static_cast<int>(pgain));
         }
-        if (leftDistance > WallWidth + PoleWidth) {
-            motor->UpdatePWM(MotorPosition::LEFT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(leftCount) / 100.0F) * target));
+        if (leftCount == 100) {
+            motor->UpdatePWM(MotorPosition::LEFT, lefttarget - static_cast<int>(pgain));
+        }
+        if (rightDistance > WallWidth * 4.0F + PoleWidth * 4.0F) {
+            motor->UpdatePWM(
+                MotorPosition::RIGHT,
+                static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(rightCount) / 100.0F) *
+                                 target));
+            rightCount--;
+            if (rightCount >= 0) break;
+        }
+        if (leftDistance > WallWidth * 4.0F + PoleWidth * 4.0F) {
+            motor->UpdatePWM(
+                MotorPosition::LEFT,
+                static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(leftCount) / 100.0F) *
+                                 lefttarget));
             leftCount--;
-            if(leftCount >= 0) break;
+            if (leftCount >= 0) break;
         }
     }
     motor->Stop(MotorPosition::RIGHT);
