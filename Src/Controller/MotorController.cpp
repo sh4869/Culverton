@@ -88,23 +88,28 @@ void MotorController::RampDown(MotorControlPosition pos, uint32_t start){
 
 void MotorController::Straight() {
     reset();
-    RampUp(MotorControlPosition::BOTH, 100);
-    /*
-    motor->Start(MotorPosition::RIGHT, 100);
-    motor->Start(MotorPosition::LEFT, 100);
-    */
-    while (1) {
-        bool right = false, left = false;
-        if (rightDistance > WallWidth) {
-            RampDown(MotorControlPosition::RIGHT,100);
-            right = true;
-        }
-        if (leftDistance > WallWidth) {
-            RampDown(MotorControlPosition::LEFT,100);
-            left = true;
-        }
-        if (right && left) break;
+    motor->Start(MotorPosition::RIGHT, 0);
+    motor->Start(MotorPosition::LEFT, 0);
+    int target = 100;
+    for(volatile int i = 0;i<100;i++){
+        motor->UpdatePWM(MotorPosition::RIGHT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * target));
+        motor->UpdatePWM(MotorPosition::LEFT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(i) / 100.0F) * target));
     }
+    int rightCount = 100, leftCount = 100;
+    while (1) {
+        if (rightDistance > WallWidth + PoleWidth) {
+            motor->UpdatePWM(MotorPosition::RIGHT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(rightCount) / 100.0F) * target));
+            rightCount--;
+            if(rightCount >= 0) break;
+        }
+        if (leftDistance > WallWidth + PoleWidth) {
+            motor->UpdatePWM(MotorPosition::LEFT,static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(leftCount) / 100.0F) * target));
+            leftCount--;
+            if(leftCount >= 0) break;
+        }
+    }
+    motor->Stop(MotorPosition::RIGHT);
+    motor->Stop(MotorPosition::LEFT);
     reset();
 }
 
