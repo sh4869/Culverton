@@ -91,7 +91,11 @@ Encoder* Encoder::GetInstance() {
 
 void Encoder::Start() {
     HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); 
+    value.right = 0;
+    value.left = 0;
+    TIM2->CNT = 0;
+    TIM3->CNT = 0;
 }
 
 void Encoder::Stop() {

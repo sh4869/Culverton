@@ -9,14 +9,9 @@
 
 #include "stm32f1xx_hal.h"
 
-static constexpr float GearRatio = 42.0F / 8.0F;
-static constexpr float WheelRadius = 27.0F / 2.0F;
-static constexpr uint32_t EncoderPulse = 1024;
-static constexpr float PI = 3.14159265258979F;
-
 struct EncoderValue {
-    uint32_t right;
-    uint32_t left;
+    int32_t right;
+    int32_t left;
 };
 
 struct EncoderVelocity {
