@@ -1,4 +1,6 @@
 #include "MouseSystem.h"
+#include "Uart.h"
+#include "BatteryMonitor.h"
 #include "Led.h"
 #include "Sensor.h"
 #include "adc.h"
@@ -18,8 +20,8 @@ void MouseSystem::init() {
 
 // パフォーマンス的な
 void MouseSystem::StartMouse() {
-    static Led* led = Led::GetInstance();
-    static Sensor* sensor = Sensor::GetInstance();
+    static Led *led = Led::GetInstance();
+    static Sensor *sensor = Sensor::GetInstance();
     sensor->LedOn(SensorLedNumber::FRONT);
     led->AllOn();
     HAL_Delay(1000);
@@ -36,4 +38,21 @@ void MouseSystem::StartMouse() {
     HAL_Delay(1000);
     led->AllOff();
     HAL_Delay(500);
+}
+
+void MouseSystem::BatteryCheck() {
+    static BatteryMonitor *bm = BatteryMonitor::GetInstance();
+    static Uart *uart = Uart::GetInstance();
+    static Led *led = Led::GetInstance();
+    if ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
+        char str[1000];
+        while ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
+            sprintf(str, "%f\n", bm->GetValue() * (8.0F / 5.0F));
+            uart->Transmit(str);
+            led->AllOn();
+            HAL_Delay(1000);
+            led->AllOff();
+            HAL_Delay(1000);
+        }
+    }
 }

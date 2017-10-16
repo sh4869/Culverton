@@ -9,6 +9,7 @@ public:
     MouseSystem();
     ~MouseSystem();
     void StartMouse();
+    void BatteryCheck();
 };
 
 #endif
