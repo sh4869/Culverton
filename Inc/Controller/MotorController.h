@@ -23,6 +23,8 @@ private:
     Encoder* encoder;
     SensorController* sensorController;
     float rightDistance, leftDistance;
+    uint32_t prevRight,prevLeft;
+    int32_t variation_right,variation_left;
 
 public:
     static void GetMoveDistance();
