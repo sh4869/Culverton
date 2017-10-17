@@ -3,8 +3,8 @@
 
 #include "Encoder.h"
 #include "Motor.h"
-#include "Variables.h"
 #include "SensorController.h"
+#include "Variables.h"
 
 enum class MotorControlPosition : int { RIGHT, LEFT, BOTH };
 
@@ -18,13 +18,15 @@ private:
     MotorController();
     void init();
     void reset();
-
+    static constexpr float getDistance(int32_t pulse) {
+        return static_cast<float>(pulse) / EncoderPulse * GearRatio * WheelRadius * 2 * PI;
+    }
     Motor* motor;
     Encoder* encoder;
     SensorController* sensorController;
-    float rightDistance, leftDistance;
-    uint32_t prevRight,prevLeft;
-    int32_t variation_right,variation_left;
+    int32_t rightPulse, leftPulse;
+    uint32_t prevRight, prevLeft;
+    int32_t variation_right, variation_left;
 
 public:
     static void GetMoveDistance();

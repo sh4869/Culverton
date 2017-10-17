@@ -13,7 +13,7 @@ void MotorController::init() {
     reset();
 }
 
-void MotorController::reset() { rightDistance = leftDistance = 0; }
+void MotorController::reset() { rightPulse = leftPulse = 0; }
 
 MotorController* MotorController::GetInstance() {
     if (instance == nullptr) {
@@ -113,14 +113,14 @@ void MotorController::Straight() {
         if (leftCount == 100) {
             motor->UpdatePWM(MotorPosition::LEFT, lefttarget - static_cast<int>(pgain));
         }
-        if ((rightDistance > WallWidth * 4.0F + PoleWidth * 4.0F + 20.0F || leftCount != 100)   && rightCount > 0) {
+        if ((getDistance(rightPulse) > WallWidth * 4.0F + PoleWidth * 4.0F + 20.0F || leftCount != 100)   && rightCount > 0) {
             motor->UpdatePWM(
                 MotorPosition::RIGHT,
                 static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(rightCount) / 100.0F) *
                                  target));
             rightCount--;
         }
-        if ((leftDistance > WallWidth * 4.0F + PoleWidth * 4.0F + 20.0F || rightCount != 100) && leftCount > 0) {
+        if ((getDistance(leftPulse) > WallWidth * 4.0F + PoleWidth * 4.0F + 20.0F || rightCount != 100) && leftCount > 0) {
             motor->UpdatePWM(
                 MotorPosition::LEFT,
                 static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(leftCount) / 100.0F) *
@@ -149,14 +149,14 @@ void MotorController::TurnRight() {
     }
     int rightCount = 100, leftCount = 100;
     while (1) {
-        if (std::abs(rightDistance) > WheelRadius * PI && rightCount > 0) {
+        if (std::abs(getDistance(rightPulse)) > WheelRadius * PI && rightCount > 0) {
             motor->UpdatePWM(
                 MotorPosition::RIGHT,
                 static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(rightCount) / 100.0F) *
                                  target));
             rightCount--;
         }
-        if (leftDistance > WheelRadius * PI && leftCount > 0) {
+        if (getDistance(leftPulse) > WheelRadius * PI && leftCount > 0) {
             motor->UpdatePWM(
                 MotorPosition::LEFT,
                 static_cast<int>(std::sin(PI / 2.0F * static_cast<float>(leftCount) / 100.0F) *
@@ -171,29 +171,20 @@ void MotorController::TurnRight() {
 
 void MotorController::Scan() {
     auto value = encoder->GetValue();
+    // 変化値を保存
     variation_right = value.right - prevRight;
     variation_left = value.left - prevLeft;
-    if (value.right > 0) {
-        rightDistance += static_cast<float>(std::abs(value.right)) / EncoderPulse * GearRatio *
-                         WheelRadius * 2 * PI;
-    } else {
-        rightDistance -= static_cast<float>(std::abs(value.right)) / EncoderPulse * GearRatio *
-                         WheelRadius * 2 * PI;
-    }
-    if (value.left > 0) {
-        leftDistance += static_cast<float>(std::abs(value.left)) / EncoderPulse * GearRatio *
-                        WheelRadius * 2 * PI;
-    } else {
-        leftDistance -= static_cast<float>(std::abs(value.left)) / EncoderPulse * GearRatio *
-                        WheelRadius * 2 * PI;
-    }
+    // とりあえず素直にpulseを追加する形で
+    rightPulse += value.right;
+    leftPulse += value.left;
+    // 過去の値を追加
     prevRight = value.right;
     prevLeft = value.left;
 }
 
 MotorCurrentDistance MotorController::GetCurrentDistance() {
     MotorCurrentDistance dis;
-    dis.right = rightDistance;
-    dis.left = leftDistance;
+    dis.right = rightPulse;
+    dis.left = leftPulse;
     return dis;
 }
