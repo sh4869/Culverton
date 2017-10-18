@@ -45,6 +45,7 @@
 
 // Peripherals
 #include "BatteryMonitor.h"
+#include "Buzzer.h"
 #include "Encoder.h"
 #include "Led.h"
 #include "Motor.h"
@@ -94,6 +95,7 @@ int main(void) {
     Switch *sw = Switch::GetInstance();
     MotorController *mc = MotorController::GetInstance();
     SensorController *sc = SensorController::GetInstance();
+    Buzzer *bz = Buzzer::GetInstance();
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
@@ -102,8 +104,10 @@ int main(void) {
     bool pressed = false;
     bool first = true;
     // パフォーマンス的な
+    bz->On();
     mouseSystem->StartMouse();
     encoder->Start();
+    bz->Off();
 
     while (1) {
         /* USER CODE END WHILE */
