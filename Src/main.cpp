@@ -87,13 +87,11 @@ int main(void) {
     SystemClock_Config();
     MouseSystem *mouseSystem = new MouseSystem();
     /* USER CODE BEGIN 2 */
-    BatteryMonitor *bm = BatteryMonitor::GetInstance();
     Sensor *sensors = Sensor::GetInstance();
     Encoder *encoder = Encoder::GetInstance();
     Uart *uart = Uart::GetInstance();
     Led *led = Led::GetInstance();
     Switch *sw = Switch::GetInstance();
-    Motor *motor = Motor::GetInstance();
     MotorController *mc = MotorController::GetInstance();
     SensorController *sc = SensorController::GetInstance();
 
@@ -125,16 +123,7 @@ int main(void) {
             // Sensor Mode
             case 1: {
                 Timer::Mode = TimerMode::SCAN;
-                if ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
-                    while ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
-                        sprintf(str, "%f\n", bm->GetValue() * (8.0F / 5.0F));
-                        uart->Transmit(str);
-                        led->AllOn();
-                        HAL_Delay(1000);
-                        led->AllOff();
-                        HAL_Delay(1000);
-                    }
-                }
+                mouseSystem->BatteryCheck();
                 led->OnOnly(LedNumber::TWO);
                 if (first) {
                     while (1) {
@@ -204,9 +193,10 @@ int main(void) {
             // RUN Mode
             case 2: {
                 HAL_Delay(1000);
+                // 指で待機するあれです
                 while (1) {
                     auto value = sensors->GetValue();
-                    if (value[static_cast<int>(SensorNumber::FRONT_LEFT)] > 600) {
+                    if (value[static_cast<int>(SensorNumber::FRONT_LEFT)] > 500) {
                         for (int i = 0; i < 2; i++) {
                             led->AllOn();
                             HAL_Delay(500);
@@ -217,17 +207,25 @@ int main(void) {
                     }
                 }
                 mc->Straight();
-
-                /*
-                HAL_Delay(1000);
+                HAL_Delay(300);
+                mc->TurnRight();
+                HAL_Delay(300);
+                
                 mc->Straight();
-                HAL_Delay(1000);
+                HAL_Delay(300);
+                mc->TurnRight();
+                HAL_Delay(300);
+                
                 mc->Straight();
-                */
+                HAL_Delay(300);
+                mc->TurnRight();
+                HAL_Delay(300);
+                mc->Straight();
                 mode++;
                 break;
             }
             case 3:
+            Timer::Mode = TimerMode::NONE;
                 break;
         }
     }
