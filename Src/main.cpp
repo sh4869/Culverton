@@ -104,10 +104,8 @@ int main(void) {
     bool pressed = false;
     bool first = true;
     // パフォーマンス的な
-    bz->On();
     mouseSystem->StartMouse();
     encoder->Start();
-    bz->Off();
 
     while (1) {
         /* USER CODE END WHILE */

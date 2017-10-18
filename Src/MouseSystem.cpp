@@ -1,8 +1,9 @@
 #include "MouseSystem.h"
-#include "Uart.h"
 #include "BatteryMonitor.h"
+#include "Buzzer.h"
 #include "Led.h"
 #include "Sensor.h"
+#include "Uart.h"
 #include "adc.h"
 #include "stm32f1xx_hal.h"
 #include "tim.h"
@@ -23,9 +24,12 @@ void MouseSystem::init() {
 void MouseSystem::StartMouse() {
     static Led *led = Led::GetInstance();
     static Sensor *sensor = Sensor::GetInstance();
+    static Buzzer *buzzer = Buzzer::GetInstance();
+    buzzer->On(2500);
     sensor->LedOn(SensorLedNumber::FRONT);
     led->AllOn();
     HAL_Delay(1000);
+    buzzer->Off();
     sensor->LedOff(SensorLedNumber::FRONT);
     led->AllOff();
     HAL_Delay(100);
@@ -37,6 +41,7 @@ void MouseSystem::StartMouse() {
     }
     led->AllOn();
     HAL_Delay(1000);
+    buzzer->Off();
     led->AllOff();
     HAL_Delay(500);
 }

@@ -32,8 +32,8 @@ Buzzer* Buzzer::GetInstance() {
     return instance;
 }
 
-void Buzzer::On() {
-    sConfigOC.Pulse = 3200;
+void Buzzer::On(uint32_t pulse) {
+    sConfigOC.Pulse = pulse;
     HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
 }

@@ -14,7 +14,7 @@ private:
 
 public:
     static Buzzer* GetInstance();
-    void On();
+    void On(uint32_t pulse);
     void Off();
 };
 
