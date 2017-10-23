@@ -6,3 +6,4 @@ Cpp11BracedListStyle: false
 IndentWidth: 4
 AccessModifierOffset: -4
 BinPackParameters: false
+NamespaceIndentation: All
