@@ -31,7 +31,7 @@ void MouseSystem::StartMouse() {
     buzzer->On(1000);
     sensor->LedOn(SensorLedNumber::FRONT);
     led->AllOn();
-    HAL_Delay(1000);
+    HAL_Delay(500);
     buzzer->Off();
     sensor->LedOff(SensorLedNumber::FRONT);
     led->AllOff();
