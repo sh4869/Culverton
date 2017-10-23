@@ -1,9 +1,5 @@
 #include "MouseSystem.h"
-#include "BatteryMonitor.h"
-#include "Buzzer.h"
-#include "Led.h"
-#include "Sensor.h"
-#include "Uart.h"
+
 #include "adc.h"
 #include "stm32f1xx_hal.h"
 #include "tim.h"
@@ -18,14 +14,21 @@ void MouseSystem::init() {
     MX_ADC3_Init();
     MX_TIM8_Init();
     MX_TIM5_Init();
+    initPeripheral();
+}
+
+void MouseSystem::initPeripheral() {
+    led = Led::GetInstance();
+    sensor = Sensor::GetInstance();
+    buzzer = Buzzer::GetInstance();
+    bm = BatteryMonitor::GetInstance();
+    uart = Uart::GetInstance();
 }
 
 // パフォーマンス的な
 void MouseSystem::StartMouse() {
-    static Led *led = Led::GetInstance();
-    static Sensor *sensor = Sensor::GetInstance();
-    static Buzzer *buzzer = Buzzer::GetInstance();
-    buzzer->On(2500);
+    // Start Perfomnace
+    buzzer->On(1000);
     sensor->LedOn(SensorLedNumber::FRONT);
     led->AllOn();
     HAL_Delay(1000);
@@ -41,15 +44,11 @@ void MouseSystem::StartMouse() {
     }
     led->AllOn();
     HAL_Delay(1000);
-    buzzer->Off();
     led->AllOff();
     HAL_Delay(500);
 }
 
 void MouseSystem::BatteryCheck() {
-    static BatteryMonitor *bm = BatteryMonitor::GetInstance();
-    static Uart *uart = Uart::GetInstance();
-    static Led *led = Led::GetInstance();
     if ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
         char str[1000];
         while ((bm->GetValue() * (8.0F / 5.0F)) < 6.0F) {
