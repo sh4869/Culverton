@@ -11,8 +11,11 @@ void Timer::Interrupt() {
         case TimerMode::NONE: {
             break;
         }
-        case TimerMode::SCAN: {
+        case TimerMode::BATTERY: {
             bm->Scan();
+            break;
+        }
+        case TimerMode::SCAN: {
             sensor->Scan();
             encoder->Scan();
             motorController->Scan();
