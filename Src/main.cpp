@@ -36,14 +36,10 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 
 #include "stm32f1xx_hal.h"
 
-#include "adc.h"
-#include "main.h"
-#include "tim.h"
-
-// Peripherals
 #include "BatteryMonitor.h"
 #include "Buzzer.h"
 #include "Encoder.h"
@@ -61,27 +57,8 @@
 #include "MapController.h"
 
 #include <queue>
-/* USER CODE BEGIN Includes */
 
-/* USER CODE END Includes */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-
-/* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
-
-/* USER CODE END PFP */
-
-/* USER CODE BEGIN 0 */
-/* USER CODE END 0 */
 
 int main(void) {
     HAL_Init();
@@ -95,7 +72,6 @@ int main(void) {
     Switch *sw = Switch::GetInstance();
     MotorController *mc = MotorController::GetInstance();
     SensorController *sc = SensorController::GetInstance();
-    Buzzer *bz = Buzzer::GetInstance();
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
@@ -120,6 +96,8 @@ int main(void) {
         switch (mode % 4) {
             // Step Mode
             case 0: {
+                Timer::Mode = TimerMode::BATTERY;
+                mouseSystem->BatteryCheck();
                 break;
             }
             // Sensor Mode
@@ -210,19 +188,6 @@ int main(void) {
                 }
                 mc->Straight();
                 HAL_Delay(300);
-                mc->TurnRight();
-                HAL_Delay(300);
-                
-                mc->Straight();
-                HAL_Delay(300);
-                mc->TurnRight();
-                HAL_Delay(300);
-                
-                mc->Straight();
-                HAL_Delay(300);
-                mc->TurnRight();
-                HAL_Delay(300);
-                mc->Straight();
                 mode++;
                 break;
             }
@@ -250,7 +215,7 @@ void SystemClock_Config(void) {
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
     RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-        _Error_Handler(__FILE__, __LINE__);
+        // _Error_Handler(__FILE__, __LINE__);
     }
 
     /**Initializes the CPU, AHB and APB busses clocks
@@ -263,13 +228,13 @@ void SystemClock_Config(void) {
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
-        _Error_Handler(__FILE__, __LINE__);
+        // _Error_Handler(__FILE__, __LINE__);
     }
 
     PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
     PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
-        _Error_Handler(__FILE__, __LINE__);
+        // _Error_Handler(__FILE__, __LINE__);
     }
 
     /**Configure the Systick interrupt time
