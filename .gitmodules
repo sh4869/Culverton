@@ -1,0 +1,3 @@
+[submodule "MazeSlover"]
+	path = MazeSlover
+	url = git@github.com:sh4869/MazeSlover.git
