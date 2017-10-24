@@ -1,0 +1,84 @@
+Configuration	Culverton
+STM32CubeMX 	4.22.1
+Date	10/18/2017
+MCU	STM32F103RETx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN11	ADC1_IN11	PC1
+ADC1	IN12	ADC1_IN12	PC2
+ADC2	IN9	ADC2_IN9	PB1
+ADC3	IN10	ADC3_IN10	PC0
+ADC3	IN13	ADC3_IN13	PC3
+SYS	No Debug	SYS_VS_ND	VP_SYS_VS_ND
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+TIM2	Encoder Mode	TIM2_CH1	PA0-WKUP
+TIM2	Encoder Mode	TIM2_CH2	PA1
+TIM3	Encoder Mode	TIM3_CH1	PA6
+TIM3	Encoder Mode	TIM3_CH2	PA7
+TIM4	Internal Clock	TIM4_VS_ClockSourceINT	VP_TIM4_VS_ClockSourceINT
+TIM5	PWM Generation CH3	TIM5_CH3	PA2
+TIM8	PWM Generation CH1	TIM8_CH1	PC6
+TIM8	PWM Generation CH2	TIM8_CH2	PC7
+USART1	Asynchronous	USART1_RX	PA10
+USART1	Asynchronous	USART1_TX	PA9
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+8	PC0	ADC3_IN10	SENSOR1
+9	PC1	ADC1_IN11	SENSOR2
+10	PC2	ADC1_IN12	SENSOR3
+11	PC3	ADC3_IN13	SENSOR4
+14	PA0-WKUP	TIM2_CH1	ENCODER_RIGHT1
+15	PA1	TIM2_CH2	ENCODER_RIGHT2
+16	PA2	TIM5_CH3	BUZZER
+22	PA6	TIM3_CH1	ENCODER_LEFT2
+23	PA7	TIM3_CH2	ENCODER_LEFT1
+24	PC4	GPIO_Output	IFLED4
+25	PC5	GPIO_Output	IFLED3
+26	PB0	GPIO_Output	IFLED2
+27	PB1	ADC2_IN9	BATTERY
+29	PB10	GPIO_Output	IFLED1
+37	PC6	TIM8_CH1	MOTOR_LEFT_PWM
+38	PC7	TIM8_CH2	MOTOR_RIGHT_PWM
+39	PC8	GPIO_Output	MOTOR_LEFT_IN1
+40	PC9	GPIO_Output	MOTOR_LEFT_IN2
+42	PA9	USART1_TX	
+43	PA10	USART1_RX	
+44	PA11	GPIO_Output	MOTOR_STBY
+45	PA12	GPIO_Output	MOTOR_RIGHT_IN2
+51	PC10	GPIO_Input	SW2
+52	PC11	GPIO_Output	MOTOR_RIGHT_IN1
+57	PB5	GPIO_Input	SW1
+58	PB6	GPIO_Output	SENSORLED1
+59	PB7	GPIO_Output	SENSORLED2
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : Culverton
+Project Folder : C:\Users\sh4869\Documents\SRDC\Culverton\Program
+Toolchain / IDE : Makefile
+Firmware Package Name and Version : STM32Cube FW_F1 V1.6.0
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy all used libraries into the project folder
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : Yes
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : Balanced Size/Speed
+
+
+
+
+
+
