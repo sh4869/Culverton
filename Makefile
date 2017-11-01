@@ -64,6 +64,7 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c \
+$(wildcard Drivers/CMSIS/Include/*.c) \
 $(wildcard User/*.c) \
 Src/stm32f1xx_it.c \
 Src/stm32f1xx_hal_msp.c \
@@ -123,7 +124,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F103xE
+-DSTM32F103xE \
+-DARM_MATH_CM3
 
 
 # AS includes
