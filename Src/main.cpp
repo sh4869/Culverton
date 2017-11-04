@@ -35,6 +35,7 @@
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -56,7 +57,6 @@
 
 #include "MapController.h"
 
-#include <queue>
 
 void SystemClock_Config(void);
 
@@ -67,7 +67,6 @@ int main(void) {
     /* USER CODE BEGIN 2 */
     Sensor *sensors = Sensor::GetInstance();
     Encoder *encoder = Encoder::GetInstance();
-    Uart *uart = Uart::GetInstance();
     Led *led = Led::GetInstance();
     Switch *sw = Switch::GetInstance();
     MotorController *mc = MotorController::GetInstance();
@@ -76,7 +75,6 @@ int main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     int mode = 0;
-    char str[1000];
     bool pressed = false;
     bool first = true;
     // パフォーマンス的な
@@ -152,22 +150,6 @@ int main(void) {
                         }
                     }
                 }
-                sprintf(str, "%ld,%ld\n", sc->GetDiffFromNormal(SensorNumber::FRONT_RIGHT),
-                        sc->GetDiffFromNormal(SensorNumber::FRONT_LEFT));
-                uart->Transmit(str);
-                /*
-                sprintf(str, "%f,%f,", static_cast<float>(encoder->GetValue().right),
-                static_cast<float>(encoder->GetValue().left));
-                uart->Transmit(str);
-
-                sprintf(str,
-                "%f,%f\n",mc->GetCurrentDistance().right,mc->GetCurrentDistance().left);
-                uart->Transmit(str);
-                */
-                /*
-                sprintf(str, "%f\n", bm->GetValue());
-                uart->Transmit(str);
-                */
                 break;
             }
             // RUN Mode
