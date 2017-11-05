@@ -34,7 +34,7 @@ const Position& Odometry::GetPosition() { return pos; }
  *
  * @param v Velocity
  */
-void Odometry::Update(Velocity v) {
+void Odometry::Update(const Velocity &v) {
     const float vx = -arm_sin_f32(pos.theta) * v.v;
     const float vy = arm_cos_f32(pos.theta) * v.v;
     if (!initialized) {

@@ -8,7 +8,7 @@ class Odometry {
 public:
     Odometry(float _T);
     ~Odometry();
-    void Update(Velocity v);
+    void Update(const Velocity &v);
     void SetPositon(Position p);
     void Reset();
     const Position& GetPosition();
