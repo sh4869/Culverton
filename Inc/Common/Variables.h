@@ -1,6 +1,9 @@
 #ifndef VARIABLES_H_
 #define VARIABLES_H_
 
+// Include Math Constants
+#include "arm_math.h"
+
 // 物理定数系
 /**
  * ギア比

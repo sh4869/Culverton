@@ -8,7 +8,6 @@
 namespace Util {
     void Delay(__IO uint32_t count);
 }
-// GPIO.cを移動させられたらそこに移動する
 
 namespace GPIO {
     void On(GPIOPin pin);

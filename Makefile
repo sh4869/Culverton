@@ -136,6 +136,8 @@ C_INCLUDES =  \
 -IInc \
 -IInc/Peripheral \
 -IInc/Controller \
+-IInc/Estimator \
+-IInc/Common \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
