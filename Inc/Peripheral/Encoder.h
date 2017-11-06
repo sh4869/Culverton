@@ -12,6 +12,7 @@
 struct EncoderValue {
     int32_t right;
     int32_t left;
+    EncoderValue(int32_t _right = 0, int32_t _left = 0) : right(_right), left(_left) {}
 };
 
 struct EncoderVelocity {
@@ -27,8 +28,9 @@ private:
     void init();
 
     TIM_HandleTypeDef htim2, htim3;
-    EncoderValue value,lastValue;
+    EncoderValue value, lastValue;
     EncoderVelocity velocity;
+
 public:
     static Encoder* GetInstance();
     void Start();
