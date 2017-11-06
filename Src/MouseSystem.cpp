@@ -4,9 +4,13 @@
 #include "stm32f1xx_hal.h"
 #include "tim.h"
 
-MouseSystem::MouseSystem() { init(); }
+MouseSystem::MouseSystem() {
+    init();
+}
 
-MouseSystem::~MouseSystem() { delete this; }
+MouseSystem::~MouseSystem() {
+    delete this;
+}
 
 void MouseSystem::init() {
     MX_ADC1_Init();
