@@ -7,3 +7,7 @@ IndentWidth: 4
 AccessModifierOffset: -4
 BinPackParameters: false
 NamespaceIndentation: All
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 8
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowShortFunctionsOnASingleLine: Empty
