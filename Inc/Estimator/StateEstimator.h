@@ -19,8 +19,8 @@ public:
 
 private:
     float T;
-    std::shared_ptr<SpeedEstimator> speedestimator;
-    std::shared_ptr<Odometry> odometry;
+    std::unique_ptr<SpeedEstimator> speedestimator;
+    std::unique_ptr<Odometry> odometry;
     Encoder* encoder;
     Position pos;
     Velocity velocity;

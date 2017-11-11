@@ -3,8 +3,8 @@
 
 StateEstimator::StateEstimator(float _T)
     : T(_T),
-      speedestimator(std::make_shared<SpeedEstimator>(_T)),
-      odometry(std::make_shared<Odometry>(_T)) {
+      speedestimator(std::make_unique<SpeedEstimator>(_T)),
+      odometry(std::make_unique<Odometry>(_T)) {
     encoder = Encoder::GetInstance();
 }
 
