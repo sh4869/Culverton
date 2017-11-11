@@ -16,7 +16,7 @@ class PIDController {
 public:
     PIDParams param;
     PIDController();
-    PIDController(const PIDParams& _params);
+    PIDController(const PIDParams& _param);
     ~PIDController();
     float Update(float measured, float reference);
     void Reset();

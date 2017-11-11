@@ -7,7 +7,7 @@ PIDController::PIDController() {}
  *
  * @param _params
  */
-PIDController::PIDController(const PIDParams& _params) : param(_params) {}
+PIDController::PIDController(const PIDParams& _param) : param(_param) {}
 
 /**
  * @brief でコンストラクタ
@@ -45,8 +45,8 @@ void PIDController::Reset() {
     error_sum = 0.0f;
 }
 
-void PIDController::SetParams(){
-    
+void PIDController::SetParams(const PIDParams& _param){
+    param = _param;
 }
 
 /**
