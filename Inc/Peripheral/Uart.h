@@ -6,7 +6,7 @@
 class Uart {
 private:
     static Uart* instance;
-    Uart();
+    Uart() = default;
     void init();
     UART_HandleTypeDef huart;
 public:

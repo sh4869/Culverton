@@ -6,7 +6,7 @@
 class Buzzer {
 private:
     static Buzzer* instance;
-    Buzzer();
+    Buzzer() = default;
     void init();
     TIM_HandleTypeDef htim5;
     TIM_MasterConfigTypeDef sMasterConfig;

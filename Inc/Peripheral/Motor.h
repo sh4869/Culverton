@@ -17,7 +17,7 @@ struct MotorPins {
 class Motor {
 private:
     static Motor* instance;
-    Motor();
+    Motor() = default;
     void init();
 
     TIM_HandleTypeDef htim8;

@@ -14,8 +14,6 @@
 
 Led* Led::instance = nullptr;
 
-Led::Led() {}
-
 void Led::init() {
     gpio_pins = {
         GPIOPinPair(IFLED1_GPIO_Port, IFLED1_Pin),GPIOPinPair(IFLED2_GPIO_Port, IFLED2_Pin),

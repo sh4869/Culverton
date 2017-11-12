@@ -31,7 +31,7 @@ private:
     std::array<uint32_t, 4> darkness_value;
     bool enable;
 
-    Sensor();
+    Sensor() = default;
     void init();
     void read();
     uint32_t getADCValue(std::pair<AdcNumber, uint32_t> sensor);

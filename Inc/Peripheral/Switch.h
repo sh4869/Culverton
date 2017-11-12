@@ -19,7 +19,7 @@ class Switch {
     private:
         std::array<GPIOPin, 2> gpio_pins;
         static Switch* instance;
-        Switch();
+        Switch() = default;
         void init();
     public:
         ~Switch();

@@ -6,7 +6,7 @@
 class SensorController {
 private:
     static SensorController* instance;
-    SensorController();
+    SensorController() = default;
     void init();
     std::array<uint32_t, 4> high;
     std::array<uint32_t, 4> normal;

@@ -2,8 +2,6 @@
 
 Buzzer* Buzzer::instance = nullptr;
 
-Buzzer::Buzzer() {}
-
 void Buzzer::init() {
     __HAL_RCC_TIM5_CLK_ENABLE();
 

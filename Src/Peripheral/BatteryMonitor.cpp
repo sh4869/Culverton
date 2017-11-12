@@ -5,8 +5,6 @@
 
 BatteryMonitor* BatteryMonitor::instance = nullptr;
 
-BatteryMonitor::BatteryMonitor() {}
-
 void BatteryMonitor::init() {
     value = 0;
     enable = false;

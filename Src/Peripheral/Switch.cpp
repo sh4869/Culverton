@@ -7,8 +7,6 @@
 
 Switch* Switch::instance = nullptr;
 
-Switch::Switch() {}
-
 void Switch::init() {
     gpio_pins = { GPIOPinPair(SW1_GPIO_Port, SW1_Pin), GPIOPinPair(SW2_GPIO_Port, SW2_Pin) };
     GPIO_InitTypeDef GPIO_InitStruct;

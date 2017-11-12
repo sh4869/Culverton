@@ -21,7 +21,7 @@ class Led {
 private:
     std::array<GPIOPin, 4> gpio_pins;
     static Led* instance;
-    Led();
+    Led() = default;
     void init();
 
 public:

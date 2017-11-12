@@ -20,7 +20,7 @@ private:
     bool enable;
     uint32_t value;
 
-    BatteryMonitor();
+    BatteryMonitor() = default;
     void init();
     void read();
 

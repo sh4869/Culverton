@@ -13,8 +13,6 @@
 
 Encoder* Encoder::instance = nullptr;
 
-Encoder::Encoder() {}
-
 void Encoder::init() {
     // GPIO Setting
     GPIO_InitTypeDef GPIO_InitStruct;
