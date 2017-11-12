@@ -39,10 +39,10 @@ private:
 public:
     static Sensor* GetInstance();
     std::array<uint32_t, 4> GetValue();
-    std::array<uint32_t, 4> GetLightValue() {
+    std::array<uint32_t, 4>& GetLightValue() {
         return light_value;
     };
-    std::array<uint32_t, 4> GetDarkValue() {
+    const std::array<uint32_t, 4>& GetDarkValue() {
         return darkness_value;
     }
     void Scan();
