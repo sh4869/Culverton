@@ -102,10 +102,9 @@ void Encoder::Stop() {
 }
 
 void Encoder::Scan() {
-    uint16_t enc_right,enc_left;
-    enc_right = TIM2->CNT;
+    const uint16_t enc_right = TIM2->CNT;
+    const uint16_t enc_left = TIM3->CNT;
     TIM2->CNT = 0;
-    enc_left = TIM3->CNT;
     TIM3->CNT = 0;
     // 秒速
     if(enc_right > 32767){
