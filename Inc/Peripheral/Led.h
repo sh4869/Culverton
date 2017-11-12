@@ -7,22 +7,24 @@
 #ifndef LED_H_
 #define LED_H_
 
+
+#include <cstdint>
 #include <array>
 #include <utility>
+#include "Types.h"
 #include "stm32f1xx_hal.h"
 #include "util.h"
-#include "Types.h"
 
-enum class LedNumber : int { ONE, TWO, THREE, FOUR };
+enum class LedNumber : std::uint8_t { ONE, TWO, THREE, FOUR };
 
 class Led {
-   private:
+private:
     std::array<GPIOPin, 4> gpio_pins;
     static Led* instance;
-    Led();
+    Led() = default;
     void init();
 
-   public:
+public:
     ~Led();
     static Led* GetInstance();
     void AllOn();

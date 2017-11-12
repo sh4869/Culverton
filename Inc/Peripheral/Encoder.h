@@ -24,7 +24,7 @@ class Encoder {
 private:
     static uint32_t VALUE;
     static Encoder* instance;
-    Encoder();
+    Encoder() = default;
     void init();
 
     TIM_HandleTypeDef htim2, htim3;

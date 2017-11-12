@@ -1,12 +1,14 @@
 #ifndef MOTORCONTROLLER_H_
 #define MOTORCONTROLLER_H_
 
+#include <cstdint>
+
 #include "Encoder.h"
 #include "Motor.h"
 #include "SensorController.h"
 #include "Variables.h"
 
-enum class MotorControlPosition : int { RIGHT, LEFT, BOTH };
+enum class MotorControlPosition : std::uint8_t { RIGHT, LEFT, BOTH };
 
 struct MotorCurrentDistance {
     float right, left;
@@ -15,7 +17,7 @@ struct MotorCurrentDistance {
 class MotorController {
 private:
     static MotorController* instance;
-    MotorController();
+    MotorController() = default;
     void init();
     void reset();
     static constexpr float getDistance(int32_t pulse) {

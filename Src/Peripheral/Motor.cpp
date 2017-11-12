@@ -17,8 +17,6 @@
 
 Motor* Motor::instance = nullptr;
 
-Motor::Motor() {}
-
 void Motor::init() {
     // Variable Iinitialization
     stbyPin = GPIOPinPair(MOTOR_STBY_GPIO_Port, MOTOR_STBY_Pin);

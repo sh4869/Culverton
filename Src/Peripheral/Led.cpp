@@ -14,8 +14,6 @@
 
 Led* Led::instance = nullptr;
 
-Led::Led() {}
-
 void Led::init() {
     gpio_pins = {
         GPIOPinPair(IFLED1_GPIO_Port, IFLED1_Pin),GPIOPinPair(IFLED2_GPIO_Port, IFLED2_Pin),
@@ -47,13 +45,13 @@ Led* Led::GetInstance() {
 }
 
 void Led::AllOn() {
-    for (GPIOPin pin : gpio_pins) {
+    for (auto&& pin : gpio_pins) {
         GPIO::On(pin);
     }
 }
 
 void Led::AllOff() {
-    for (GPIOPin pin : gpio_pins) {
+    for (auto&& pin : gpio_pins) {
         GPIO::Off(pin);
     }
 }

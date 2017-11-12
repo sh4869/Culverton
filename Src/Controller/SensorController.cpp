@@ -3,13 +3,11 @@
 
 SensorController* SensorController::instance = nullptr;
 
-SensorController::SensorController() {}
-
 void SensorController::init(){
     sensor = Sensor::GetInstance();
-    high = {0};
-    normal = {0};
-    setHigh = {false};
+    high = {};
+    normal = {};
+    setHigh = 0;
 }
 
 SensorController* SensorController::GetInstance(){

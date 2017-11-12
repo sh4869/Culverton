@@ -15,8 +15,6 @@
 
 Sensor* Sensor::instance = nullptr;
 
-Sensor::Sensor() {}
-
 void Sensor::init() {
     sensors = { std::make_pair(AdcNumber::ONE, ADC_CHANNEL_10),
                 std::make_pair(AdcNumber::THREE, ADC_CHANNEL_11),

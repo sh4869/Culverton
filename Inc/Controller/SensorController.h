@@ -1,16 +1,17 @@
 #ifndef SENSORCONTROLLER_H_
 #define SENSORCONTROLLER_H_
 
+#include <bitset>
 #include "Sensor.h"
 
 class SensorController {
 private:
     static SensorController* instance;
-    SensorController();
+    SensorController() = default;
     void init();
     std::array<uint32_t, 4> high;
     std::array<uint32_t, 4> normal;
-    std::array<bool, 4> setHigh;
+    std::bitset<4> setHigh;
     Sensor* sensor;
 
 public:

@@ -41,6 +41,7 @@ void Odometry::Update(const Velocity &v) {
         prev_x = vx;
         prev_y = vy;
         prev_omega = v.omega;
+        initialized = true;
     }
     pos.x += (vx + prev_x) / 2.0 * T;
     pos.y += (vy + prev_y) / 2.0 * T;

@@ -7,8 +7,6 @@
 
 Switch* Switch::instance = nullptr;
 
-Switch::Switch() {}
-
 void Switch::init() {
     gpio_pins = { GPIOPinPair(SW1_GPIO_Port, SW1_Pin), GPIOPinPair(SW2_GPIO_Port, SW2_Pin) };
     GPIO_InitTypeDef GPIO_InitStruct;
@@ -27,7 +25,9 @@ void Switch::init() {
     HAL_GPIO_Init(SW1_GPIO_Port, &GPIO_InitStruct);
 }
 
-Switch::~Switch() { delete instance; }
+Switch::~Switch() {
+    delete instance;
+}
 
 Switch* Switch::GetInstance() {
     if (instance == nullptr) {
@@ -38,10 +38,6 @@ Switch* Switch::GetInstance() {
 }
 
 bool Switch::IsPressed(SwitchNumber number) {
-    int index = static_cast<int>(number);
-    // TODO チャタリング対策したほうが良さそう？
-    if (HAL_GPIO_ReadPin(gpio_pins[index].first, gpio_pins[index].second) == GPIO_PIN_SET) {
-        return true;
-    }
-    return false;
+    return HAL_GPIO_ReadPin(gpio_pins[static_cast<int>(number)].first,
+                            gpio_pins[static_cast<int>(number)].second) == GPIO_PIN_SET;
 }

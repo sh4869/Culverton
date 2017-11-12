@@ -3,8 +3,6 @@
 
 Uart* Uart::instance = nullptr;
 
-Uart::Uart() {}
-
 void Uart::init() {
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
