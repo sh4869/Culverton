@@ -77,7 +77,7 @@ void Motor::init() {
     HAL_NVIC_EnableIRQ(TIM8_BRK_IRQn);
 }
 
-void Motor::UpdatePWM(MotorPosition pos, uint32_t pulse) {
+void Motor::SetDuty(MotorPosition pos, uint32_t pulse) {
     uint32_t channel;
     switch(pos){
         case MotorPosition::RIGHT:
@@ -151,5 +151,5 @@ void Motor::Start(MotorPosition pos,uint32_t pulse) {
         SetStandby();
     }
     SetDirection(pos, MotorDirection::FRONT);
-    UpdatePWM(pos, pulse);
+    SetDuty(pos, pulse);
 }

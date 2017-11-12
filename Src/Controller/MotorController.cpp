@@ -43,14 +43,14 @@ void MotorController::RampUp(MotorControlPosition pos, uint32_t target) {
         value = static_cast<int>(static_cast<float>(i) / 100.0F) * target;
         switch (pos) {
             case MotorControlPosition::RIGHT:
-                motor->UpdatePWM(MotorPosition::RIGHT, value);
+                motor->SetDuty(MotorPosition::RIGHT, value);
                 break;
             case MotorControlPosition::LEFT:
-                motor->UpdatePWM(MotorPosition::LEFT, value);
+                motor->SetDuty(MotorPosition::LEFT, value);
                 break;
             case MotorControlPosition::BOTH:
-                motor->UpdatePWM(MotorPosition::RIGHT, value);
-                motor->UpdatePWM(MotorPosition::LEFT, value);
+                motor->SetDuty(MotorPosition::RIGHT, value);
+                motor->SetDuty(MotorPosition::LEFT, value);
                 break;
         }
     }
@@ -62,14 +62,14 @@ void MotorController::RampDown(MotorControlPosition pos, uint32_t start) {
         value = static_cast<int>(static_cast<float>(i) / 100.0F * start);
         switch (pos) {
             case MotorControlPosition::RIGHT:
-                motor->UpdatePWM(MotorPosition::RIGHT, value);
+                motor->SetDuty(MotorPosition::RIGHT, value);
                 break;
             case MotorControlPosition::LEFT:
-                motor->UpdatePWM(MotorPosition::LEFT, value);
+                motor->SetDuty(MotorPosition::LEFT, value);
                 break;
             case MotorControlPosition::BOTH:
-                motor->UpdatePWM(MotorPosition::RIGHT, value);
-                motor->UpdatePWM(MotorPosition::LEFT, value);
+                motor->SetDuty(MotorPosition::RIGHT, value);
+                motor->SetDuty(MotorPosition::LEFT, value);
                 break;
         }
     }
@@ -95,9 +95,9 @@ void MotorController::Straight() {
     int lefttarget = target;
     char str[1000];
     for (volatile int i = 0; i < 1000; i++) {
-        motor->UpdatePWM(MotorPosition::RIGHT,
+        motor->SetDuty(MotorPosition::RIGHT,
                          static_cast<int>(static_cast<float>(i) / 1000.0F * target));
-        motor->UpdatePWM(MotorPosition::LEFT,
+        motor->SetDuty(MotorPosition::LEFT,
                          static_cast<int>(static_cast<float>(i) / 1000.0F * lefttarget));
     }
     int rightCount = 100, leftCount = 100;
@@ -106,18 +106,18 @@ void MotorController::Straight() {
                    sensorController->GetDiffFromNormal(SensorNumber::FRONT_LEFT);
         float pgain = static_cast<float>(cte) * 0.8F;
         if (rightCount == 100) {
-            motor->UpdatePWM(MotorPosition::RIGHT, target + static_cast<int>(pgain));
+            motor->SetDuty(MotorPosition::RIGHT, target + static_cast<int>(pgain));
         }
         if (leftCount == 100) {
-            motor->UpdatePWM(MotorPosition::LEFT, lefttarget - static_cast<int>(pgain));
+            motor->SetDuty(MotorPosition::LEFT, lefttarget - static_cast<int>(pgain));
         }
         if (getDistance(rightPulse) > WallWidth && rightCount > 0) {
-            motor->UpdatePWM(MotorPosition::RIGHT,
+            motor->SetDuty(MotorPosition::RIGHT,
                              static_cast<int>(static_cast<float>(rightCount) / 100.0F * target));
             rightCount--;
         }
         if (getDistance(leftPulse) > WallWidth && leftCount > 0) {
-            motor->UpdatePWM(MotorPosition::LEFT,
+            motor->SetDuty(MotorPosition::LEFT,
                              static_cast<int>(static_cast<float>(leftCount) / 100.0F) * lefttarget);
             leftCount--;
         }
@@ -134,20 +134,20 @@ void MotorController::TurnRight() {
     motor->SetDirection(MotorPosition::LEFT, MotorDirection::FRONT);
     int target = 100;
     for (volatile int i = 0; i < 100; i++) {
-        motor->UpdatePWM(MotorPosition::RIGHT,
+        motor->SetDuty(MotorPosition::RIGHT,
                          static_cast<int>(static_cast<float>(i) / 100.0F * target));
-        motor->UpdatePWM(MotorPosition::LEFT,
+        motor->SetDuty(MotorPosition::LEFT,
                          static_cast<int>(static_cast<float>(i) / 100.0F * target));
     }
     int rightCount = 100, leftCount = 100;
     while (1) {
         if (std::abs(getDistance(rightPulse)) > WheelRadius * PI && rightCount > 0) {
-            motor->UpdatePWM(MotorPosition::RIGHT,
+            motor->SetDuty(MotorPosition::RIGHT,
                              static_cast<int>(static_cast<float>(rightCount) / 100.0F * target));
             rightCount--;
         }
         if (getDistance(leftPulse) > WheelRadius * PI && leftCount > 0) {
-            motor->UpdatePWM(MotorPosition::LEFT,
+            motor->SetDuty(MotorPosition::LEFT,
                              static_cast<int>(static_cast<float>(leftCount) / 100.0F * target));
             leftCount--;
         }

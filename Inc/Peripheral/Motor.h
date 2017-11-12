@@ -38,7 +38,7 @@ public:
     void SetDirection(MotorPosition pos, MotorDirection dir);
     void Stop(MotorPosition pos);
     void Start(MotorPosition pos,uint32_t pulse);
-    void UpdatePWM(MotorPosition pos, uint32_t pulse);
+    void SetDuty(MotorPosition pos, uint32_t pulse);
 };
 
 #endif
