@@ -5,8 +5,8 @@ SensorController* SensorController::instance = nullptr;
 
 void SensorController::init(){
     sensor = Sensor::GetInstance();
-    high = {0};
-    normal = {0};
+    high = {};
+    normal = {};
     setHigh = {false};
 }
 
