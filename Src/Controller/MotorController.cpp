@@ -3,8 +3,6 @@
 
 MotorController* MotorController::instance = nullptr;
 
-MotorController::MotorController() {}
-
 void MotorController::init() {
     motor = Motor::GetInstance();
     encoder = Encoder::GetInstance();

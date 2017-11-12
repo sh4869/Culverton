@@ -17,7 +17,7 @@ struct MotorCurrentDistance {
 class MotorController {
 private:
     static MotorController* instance;
-    MotorController();
+    MotorController() = default;
     void init();
     void reset();
     static constexpr float getDistance(int32_t pulse) {
