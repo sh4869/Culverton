@@ -45,13 +45,13 @@ Led* Led::GetInstance() {
 }
 
 void Led::AllOn() {
-    for (GPIOPin pin : gpio_pins) {
+    for (auto&& pin : gpio_pins) {
         GPIO::On(pin);
     }
 }
 
 void Led::AllOff() {
-    for (GPIOPin pin : gpio_pins) {
+    for (auto&& pin : gpio_pins) {
         GPIO::Off(pin);
     }
 }
