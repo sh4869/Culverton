@@ -13,7 +13,6 @@ PIDController::PIDController(const PIDParams& _param) : param(_param) {}
  * @brief でコンストラクタ
  */
 PIDController::~PIDController() {
-    delete this;
 }
 
 /**
