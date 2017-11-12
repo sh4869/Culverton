@@ -12,6 +12,6 @@ void SpeedEstimator::Update(const EncoderValue& enc) {
     prev_enc = enc;
 }
 
-const Velocity& SpeedEstimator::GetVelocity() {
+const Velocity& SpeedEstimator::GetVelocity() const {
     return ve;
 }

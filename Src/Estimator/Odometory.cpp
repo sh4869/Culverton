@@ -21,7 +21,7 @@ void Odometry::SetPositon(Position p) { pos = p; }
  *
  * @return Position& 現在推定位置
  */
-const Position& Odometry::GetPosition() { return pos; }
+const Position& Odometry::GetPosition() const { return pos; }
 
 /**
  * @brief オドメトリをアップデートします

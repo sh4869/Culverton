@@ -55,10 +55,10 @@ void BatteryMonitor::Scan() {
     if (enable) read();
 }
 
-uint32_t BatteryMonitor::GetRawValue(){
+const uint32_t& BatteryMonitor::GetRawValue() const {
     return value;
 }
 
-float BatteryMonitor::GetValue() {
+float BatteryMonitor::GetValue() const {
     return static_cast<float>(value) / 4095.0f * 3.3f * (22.0f + 10.0f) / 10.0f;
 }

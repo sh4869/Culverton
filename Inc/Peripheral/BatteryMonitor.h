@@ -27,7 +27,7 @@ private:
 public:
     static BatteryMonitor* GetInstance();
     void Scan();
-    uint32_t GetRawValue();
-    float GetValue();
+    const uint32_t& GetRawValue() const;
+    float GetValue() const;
 };
 #endif

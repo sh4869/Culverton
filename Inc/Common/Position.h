@@ -23,7 +23,7 @@ struct Position {
      * @param other
      * @return Position
      */
-    Position operator+(Position other) {
+    Position operator+(Position other) const {
         return Position(this->x + other.x, this->y + other.y, this->theta + other.theta);
     }
 
@@ -33,7 +33,7 @@ struct Position {
      * @param other
      * @return Position
      */
-    Position operator-(Position other) {
+    Position operator-(Position other) const {
         return Position(this->x - other.x, this->y - other.y, this->theta - other.theta);
     }
 };
