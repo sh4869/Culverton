@@ -25,7 +25,7 @@ private:
     
 public:
     MouseSystem();
-    ~MouseSystem();
+    ~MouseSystem() = default;
     void StartMouse();
     void BatteryCheck();
 };

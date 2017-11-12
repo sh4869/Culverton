@@ -8,10 +8,6 @@ MouseSystem::MouseSystem() {
     init();
 }
 
-MouseSystem::~MouseSystem() {
-    delete this;
-}
-
 void MouseSystem::init() {
     MX_ADC1_Init();
     MX_ADC2_Init();
