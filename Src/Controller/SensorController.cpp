@@ -7,7 +7,7 @@ void SensorController::init(){
     sensor = Sensor::GetInstance();
     high = {};
     normal = {};
-    setHigh = {false};
+    setHigh = 0;
 }
 
 SensorController* SensorController::GetInstance(){
