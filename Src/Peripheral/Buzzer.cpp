@@ -19,7 +19,7 @@ void Buzzer::init() {
     sConfigOC.Pulse = 0;
     sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-    HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_3);
+    HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, timechannel);
 }
 
 Buzzer* Buzzer::GetInstance() {
@@ -32,8 +32,10 @@ Buzzer* Buzzer::GetInstance() {
 
 void Buzzer::On(uint32_t pulse) {
     sConfigOC.Pulse = pulse;
-    HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
+    HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC,timechannel);
+    HAL_TIM_PWM_Start(&htim5, timechannel);
 }
 
-void Buzzer::Off() { HAL_TIM_PWM_Stop(&htim5, TIM_CHANNEL_3); }
+void Buzzer::Off(){
+    HAL_TIM_PWM_Stop(&htim5, timechannel);
+}
