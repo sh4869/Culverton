@@ -16,7 +16,7 @@ private:
 
     ADC_ChannelConfTypeDef sConfig;
     ADC_HandleTypeDef hadc2;
-    const uint32_t adc_channel = ADC_CHANNEL_9;
+    static constexpr uint32_t adc_channel = ADC_CHANNEL_9;
     bool enable;
     uint32_t value;
 
