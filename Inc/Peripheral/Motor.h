@@ -24,7 +24,8 @@ private:
     TIM_MasterConfigTypeDef sMasterConfig;
     TIM_OC_InitTypeDef sConfigOC;
     TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
-    uint32_t rightChannel = TIM_CHANNEL_2, leftChannel = TIM_CHANNEL_1;
+    static constexpr uint32_t rightChannel = TIM_CHANNEL_2;
+    static constexpr uint32_t leftChannel = TIM_CHANNEL_1;
     GPIOPin stbyPin;
     MotorPins rightPins,leftPins;
     bool is_standby = false;
