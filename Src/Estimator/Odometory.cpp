@@ -10,12 +10,6 @@ Odometry::Odometry(float _T)
     : T(_T), pos(), prev_x(0), prev_y(0), prev_omega(0), initialized(true) {}
 
 /**
- * @brief デコンストラクタ
- *
- */
-Odometry::~Odometry() { delete this; }
-
-/**
  * @brief Positionをセットします
  *
  * @param p セットするPosition

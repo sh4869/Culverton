@@ -3,10 +3,6 @@
 
 SpeedEstimator::SpeedEstimator(float _T) : T(_T), prev_enc(0, 0){};
 
-SpeedEstimator::~SpeedEstimator() {
-    delete this;
-}
-
 void SpeedEstimator::Update(const EncoderValue& enc) {
     // 角速度の算出
     float omega_r = (enc.right - prev_enc.right) / (EncoderPulse * GearRatio * T) * PI * 2;

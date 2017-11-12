@@ -8,7 +8,7 @@
 class SpeedEstimator {
 public:
     SpeedEstimator(float _T);
-    ~SpeedEstimator();
+    ~SpeedEstimator() = default;
     void Update(const EncoderValue &enc);
     const Velocity& GetVelocity();
 private:
