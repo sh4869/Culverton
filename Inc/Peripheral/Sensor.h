@@ -7,6 +7,7 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
+#include <cstdint>
 #include <array>
 #include <tuple>
 #include <utility>
@@ -14,9 +15,9 @@
 #include "stm32f1xx_hal.h"
 #include "util.h"
 
-enum class SensorNumber : int { FRONT_RIGHT, FRONT_LEFT, SIDE_RIGHT, SIDE_LEFT };
-enum class SensorLedNumber : int { FRONT, SIDE };
-enum class AdcNumber : int { ONE, THREE };
+enum class SensorNumber : std::uint8_t { FRONT_RIGHT, FRONT_LEFT, SIDE_RIGHT, SIDE_LEFT };
+enum class SensorLedNumber : std::uint8_t { FRONT, SIDE };
+enum class AdcNumber : std::uint8_t { ONE, THREE };
 
 class Sensor {
 private:
@@ -38,8 +39,12 @@ private:
 public:
     static Sensor* GetInstance();
     std::array<uint32_t, 4> GetValue();
-    std::array<uint32_t, 4> GetLightValue() { return light_value; };
-    std::array<uint32_t, 4> GetDarkValue() { return darkness_value; }
+    std::array<uint32_t, 4> GetLightValue() {
+        return light_value;
+    };
+    std::array<uint32_t, 4> GetDarkValue() {
+        return darkness_value;
+    }
     void Scan();
     void LedOn(SensorLedNumber number);
     void LedOff(SensorLedNumber number);

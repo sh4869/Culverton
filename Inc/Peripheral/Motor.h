@@ -1,12 +1,14 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
+
+#include <cstdint>
 #include "stm32f1xx_hal.h"
 #include "util.h"
 #include "Types.h"
 
-enum class MotorDirection : int { FRONT, BACK };
-enum class MotorPosition : int { RIGHT, LEFT };
+enum class MotorDirection : std::uint8_t { FRONT, BACK };
+enum class MotorPosition : std::uint8_t { RIGHT, LEFT };
 
 struct MotorPins {
     GPIOPin In1Pin,In2Pin;
