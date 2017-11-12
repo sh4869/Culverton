@@ -10,7 +10,7 @@ PIDController::PIDController() {}
 PIDController::PIDController(const PIDParams& _param) : param(_param) {}
 
 /**
- * @brief でコンストラクタ
+ * @brief デコンストラクタ
  */
 PIDController::~PIDController() {
 }
