@@ -77,8 +77,15 @@ void Motor::init() {
     HAL_NVIC_EnableIRQ(TIM8_BRK_IRQn);
 }
 
-void Motor::SetDuty(MotorPosition pos, uint32_t pulse) {
+void Motor::SetDuty(MotorPosition pos, int32_t pulse) {
+    if(pulse < 0) {
+        SetDirection(pos,MotorDirection::BACK);
+        pulse = -1 * pulse;
+    } else {
+        SetDirection(pos,MotorDirection::FRONT);
+    }
     uint32_t channel;
+    // Set Direction for reverse 
     switch(pos){
         case MotorPosition::RIGHT:
             channel = rightChannel;
