@@ -1,3 +1,5 @@
+
+#include <limits>
 #include "Encoder.h"
 
 // Defines
@@ -107,12 +109,12 @@ void Encoder::Scan() {
     TIM2->CNT = 0;
     TIM3->CNT = 0;
     // 秒速
-    if(enc_right > 32767){
+    if(enc_right > std::numeric_limits<int16_t>::max()){
         value.right = -(int16_t)enc_right;
     } else {
         value.right = -enc_right;
     }
-    if(enc_left > 32767){
+    if(enc_left > std::numeric_limits<int16_t>::max()){
         value.left = (int16_t)enc_left;
     } else {
         value.left = enc_left;
