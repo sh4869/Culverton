@@ -74,8 +74,9 @@ Src/Peripheral/adc.c \
 Src/Peripheral/tim.c
 
 CPP_SOURCES = \
-$(wildcard Src/*.cpp) \
+$(wildcard Src/**/**/*.cpp) \
 $(wildcard Src/**/*.cpp) \
+$(wildcard Src/*.cpp) \
 $(wildcard MazeSlover/Src/*.cpp)
 
 # ASM sources
