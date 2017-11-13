@@ -14,11 +14,7 @@ enum class TimerMode : std::uint8_t { NONE, BATTERY, SCAN };
 
 class Timer {
 private:
-    static BatteryMonitor *bm;
-    static Sensor *sensor;
-    static Encoder *encoder;
-    static MotorController *motorController;
-
+    
 public:
     static void Interrupt();
     static TimerMode Mode;

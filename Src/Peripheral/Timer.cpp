@@ -1,12 +1,11 @@
 #include "Timer.h"
 
-BatteryMonitor* Timer::bm = BatteryMonitor::GetInstance();
-Sensor* Timer::sensor = Sensor::GetInstance();
-Encoder* Timer::encoder = Encoder::GetInstance();
-MotorController* Timer::motorController = MotorController::GetInstance();
 TimerMode Timer::Mode = TimerMode::NONE;
 
 void Timer::Interrupt() {
+    static BatteryMonitor* bm = BatteryMonitor::GetInstance();
+    static Sensor* sensor = Sensor::GetInstance();
+    static Encoder* encoder = Encoder::GetInstance();
     switch (Timer::Mode) {
         case TimerMode::NONE: {
             break;
@@ -18,7 +17,6 @@ void Timer::Interrupt() {
         case TimerMode::SCAN: {
             sensor->Scan();
             encoder->Scan();
-            motorController->Scan();
             break;
         }
     }
