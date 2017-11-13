@@ -24,7 +24,7 @@ void Motor::init() {
     rightPins.In2Pin = GPIOPinPair(MOTOR_RIGHT_IN2_GPIO_Port, MOTOR_RIGHT_IN2_Pin);
     leftPins.In1Pin = GPIOPinPair(MOTOR_LEFT_IN1_GPIO_Port, MOTOR_LEFT_IN1_Pin);
     leftPins.In2Pin = GPIOPinPair(MOTOR_LEFT_IN2_GPIO_Port, MOTOR_LEFT_IN2_Pin);
-    
+
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_TIM8_CLK_ENABLE();
@@ -72,21 +72,21 @@ void Motor::init() {
     sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
     sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
     HAL_TIMEx_ConfigBreakDeadTime(&htim8, &sBreakDeadTimeConfig);
-    
+
     HAL_NVIC_SetPriority(TIM8_BRK_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM8_BRK_IRQn);
 }
 
 void Motor::SetDuty(MotorPosition pos, int32_t pulse) {
-    if(pulse < 0) {
-        SetDirection(pos,MotorDirection::BACK);
+    if (pulse < 0) {
+        SetDirection(pos, MotorDirection::BACK);
         pulse = -1 * pulse;
     } else {
-        SetDirection(pos,MotorDirection::FRONT);
+        SetDirection(pos, MotorDirection::FRONT);
     }
     uint32_t channel;
-    // Set Direction for reverse 
-    switch(pos){
+    // Set Direction for reverse
+    switch (pos) {
         case MotorPosition::RIGHT:
             channel = rightChannel;
             break;
@@ -99,6 +99,11 @@ void Motor::SetDuty(MotorPosition pos, int32_t pulse) {
     HAL_TIM_PWM_Start(&htim8, channel);
 }
 
+void Motor::SetDuty(MotorDuty duty) {
+    SetDuty(MotorPosition::RIGHT, duty.right);
+    SetDuty(MotorPosition::LEFT, duty.left);
+}
+
 Motor* Motor::GetInstance() {
     if (instance == nullptr) {
         instance = new Motor();
@@ -107,7 +112,9 @@ Motor* Motor::GetInstance() {
     return instance;
 }
 
-bool Motor::IsStandby() { return is_standby; }
+bool Motor::IsStandby() {
+    return is_standby;
+}
 
 void Motor::SetStandby() {
     GPIO::On(stbyPin);
@@ -143,7 +150,7 @@ void Motor::SetDirection(MotorPosition pos, MotorDirection dir) {
 
 // あくまでPWMを止める形で
 void Motor::Stop(MotorPosition pos) {
-    switch(pos){
+    switch (pos) {
         case MotorPosition::RIGHT:
             HAL_TIM_PWM_Stop(&htim8, rightChannel);
             break;
@@ -153,7 +160,7 @@ void Motor::Stop(MotorPosition pos) {
     }
 }
 
-void Motor::Start(MotorPosition pos,uint32_t pulse) {
+void Motor::Start(MotorPosition pos, uint32_t pulse) {
     if (!is_standby) {
         SetStandby();
     }
