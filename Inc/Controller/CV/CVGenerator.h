@@ -11,11 +11,8 @@
  */
 class CVGenerator {
 public:
-    virtual ~CVGenerator();
-    virtual float Update();
-    virtual void Disable();
-    virtual void Enable();
-    virtual const bool isEnable();
+    ~CVGenerator() = default;
+    virtual float Update() = 0;
 };
 
 #endif
