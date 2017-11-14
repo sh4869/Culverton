@@ -1,5 +1,5 @@
 #include "Odometry.h"
-#include "arm_math.h"
+#include <cmath>
 
 /**
  * @brief コンストラクタ
@@ -29,8 +29,8 @@ const Position& Odometry::GetPosition() const { return pos; }
  * @param v Velocity
  */
 void Odometry::Update(const Velocity &v) {
-    const float vx = -arm_sin_f32(pos.theta) * v.v;
-    const float vy = arm_cos_f32(pos.theta) * v.v;
+    const float vx = -std::sin(pos.theta) * v.v;
+    const float vy = std::cos(pos.theta) * v.v;
     if (!initialized) {
         prev_x = vx;
         prev_y = vy;
