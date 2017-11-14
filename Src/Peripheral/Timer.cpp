@@ -1,8 +1,10 @@
 #include "Timer.h"
 
 TimerMode Timer::Mode = TimerMode::NONE;
+int32_t Timer::count = 0;
 
 void Timer::Interrupt() {
+    count++;
     static BatteryMonitor* bm = BatteryMonitor::GetInstance();
     static Sensor* sensor = Sensor::GetInstance();
     static Encoder* encoder = Encoder::GetInstance();
@@ -20,4 +22,8 @@ void Timer::Interrupt() {
             break;
         }
     }
+}
+
+const int32_t Timer::GetCount(){
+    return count;
 }

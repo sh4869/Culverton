@@ -14,10 +14,11 @@ enum class TimerMode : std::uint8_t { NONE, BATTERY, SCAN };
 
 class Timer {
 private:
-    
+    static int32_t count;
 public:
     static void Interrupt();
     static TimerMode Mode;
+    static const int32_t GetCount();
 };
 
 #endif
