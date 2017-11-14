@@ -12,7 +12,7 @@
 class StateEstimator {
 public:
     StateEstimator(float _T);
-    ~StateEstimator();
+    ~StateEstimator() = default;
     void Update();
     const Velocity& GetVelocity();
     const Position& GetPositon();
