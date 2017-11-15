@@ -3,10 +3,11 @@
 
 
 #include <cstdint>
+#include <memory>
 
 #include "BatteryMonitor.h"
 #include "Encoder.h"
-#include "MotorController.h"
+#include "MotionController.h"
 #include "Sensor.h"
 #include "stm32f1xx_hal.h"
 
@@ -15,10 +16,12 @@ enum class TimerMode : std::uint8_t { NONE, BATTERY, SCAN };
 class Timer {
 private:
     static int32_t count;
+    static std::shared_ptr<MotionController> motionCon;
 public:
     static void Interrupt();
     static TimerMode Mode;
     static const int32_t GetCount();
+    static void SetMotionController(std::shared_ptr<MotionController> con);
 };
 
 #endif

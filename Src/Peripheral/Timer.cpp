@@ -1,6 +1,7 @@
 #include "Timer.h"
 
 TimerMode Timer::Mode = TimerMode::NONE;
+std::shared_ptr<MotionController> Timer::motionCon = nullptr;
 int32_t Timer::count = 0;
 
 void Timer::Interrupt() {
@@ -19,6 +20,9 @@ void Timer::Interrupt() {
         case TimerMode::SCAN: {
             sensor->Scan();
             encoder->Scan();
+            if(motionCon != nullptr){
+                motionCon->Update();
+            }
             break;
         }
     }
@@ -26,4 +30,8 @@ void Timer::Interrupt() {
 
 const int32_t Timer::GetCount(){
     return count;
+}
+
+void Timer::SetMotionController(std::shared_ptr<MotionController> con){
+    motionCon = con;
 }
