@@ -51,12 +51,10 @@
 #include "Timer.h"
 #include "Uart.h"
 
-#include "MotorController.h"
 #include "MouseSystem.h"
 #include "SensorController.h"
 
 #include "MapController.h"
-
 
 void SystemClock_Config(void);
 
@@ -69,7 +67,6 @@ int main(void) {
     Encoder *encoder = Encoder::GetInstance();
     Led *led = Led::GetInstance();
     Switch *sw = Switch::GetInstance();
-    MotorController *mc = MotorController::GetInstance();
     SensorController *sc = SensorController::GetInstance();
 
     /* Infinite loop */
@@ -168,8 +165,6 @@ int main(void) {
                         break;
                     }
                 }
-                mc->Straight();
-                HAL_Delay(300);
                 mode++;
                 break;
             }
