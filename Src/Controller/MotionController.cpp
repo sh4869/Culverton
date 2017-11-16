@@ -1,6 +1,7 @@
 #include "MotionController.h"
 
 std::shared_ptr<MotionController> MotionController::instance = nullptr;
+Motor * MotionController::motor = Motor::GetInstance();
 
 MotionController::MotionController()
     : estimator(std::make_shared<StateEstimator>(T)),
@@ -20,7 +21,6 @@ std::shared_ptr<MotionController> MotionController::GetInstance() {
 }
 
 void MotionController::Update() {
-    Motor* motor = Motor::GetInstance();
     // 推定機の更新
     estimator->Update();
     // Targetの更新

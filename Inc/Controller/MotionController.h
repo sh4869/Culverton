@@ -28,6 +28,7 @@ private:
     std::unique_ptr<AngularVelocityCVGenerator> angspeedcvgen;
     std::shared_ptr<StateEstimator> estimator;
     bool enable;
+    static Motor *motor;
 };
 
 
