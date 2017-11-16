@@ -18,6 +18,7 @@ struct EncoderValue {
 struct EncoderVelocity {
     float right;
     float left;
+    EncoderVelocity(float _right = 0, float _left = 0) : right(_right), left(_left) {}
 };
 
 class Encoder {
