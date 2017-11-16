@@ -121,10 +121,6 @@ void Encoder::Scan() {
     }
 }
 
-EncoderValue Encoder::GetValue() {
+const EncoderValue& Encoder::GetValue() {
     return value;
-}
-
-EncoderVelocity Encoder::GetVelocity(){
-    return velocity;
 }

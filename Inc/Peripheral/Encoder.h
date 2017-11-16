@@ -29,15 +29,13 @@ private:
 
     TIM_HandleTypeDef htim2, htim3;
     EncoderValue value, lastValue;
-    EncoderVelocity velocity;
 
 public:
     static Encoder* GetInstance();
     void Start();
     void Stop();
     void Scan();
-    EncoderValue GetValue();
-    EncoderVelocity GetVelocity();
+    const EncoderValue& GetValue();
 };
 
 #endif
