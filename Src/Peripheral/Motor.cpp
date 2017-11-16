@@ -84,19 +84,19 @@ void Motor::SetDuty(MotorPosition pos, int32_t pulse) {
     } else {
         SetDirection(pos, MotorDirection::FRONT);
     }
-    uint32_t channel;
-    // Set Direction for reverse
+    sConfigOC.Pulse = pulse;
     switch (pos) {
         case MotorPosition::RIGHT:
-            channel = rightChannel;
+            HAL_TIM_PWM_Stop(&htim8, rightChannel);
+            HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, rightChannel);
+            HAL_TIM_PWM_Start(&htim8, rightChannel);
             break;
         case MotorPosition::LEFT:
-            channel = leftChannel;
+            HAL_TIM_PWM_Stop(&htim8, leftChannel);
+            HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, leftChannel);
+            HAL_TIM_PWM_Start(&htim8, leftChannel);
             break;
     }
-    sConfigOC.Pulse = pulse;
-    HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, channel);
-    HAL_TIM_PWM_Start(&htim8, channel);
 }
 
 void Motor::SetDuty(MotorDuty duty) {
