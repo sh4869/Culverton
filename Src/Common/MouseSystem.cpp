@@ -29,11 +29,9 @@ void MouseSystem::initPeripheral() {
 void MouseSystem::StartMouse() {
     // Start Perfomnace
     buzzer->On(1000);
-    sensor->LedOn(SensorLedNumber::FRONT);
     led->AllOn();
     HAL_Delay(500);
     buzzer->Off();
-    sensor->LedOff(SensorLedNumber::FRONT);
     led->AllOff();
     HAL_Delay(100);
     for (int j = 0; j < 2; j++) {
