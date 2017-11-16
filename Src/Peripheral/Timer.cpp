@@ -1,14 +1,12 @@
 #include "Timer.h"
 
 TimerMode Timer::Mode = TimerMode::NONE;
-int32_t Timer::count = 0;
+BatteryMonitor* Timer::bm = BatteryMonitor::GetInstance();
+Sensor* Timer::sensor = Sensor::GetInstance();
+Encoder* Timer::encoder = Encoder::GetInstance();
 
 void Timer::Interrupt() {
-    count++;
-    static BatteryMonitor* bm = BatteryMonitor::GetInstance();
-    static Sensor* sensor = Sensor::GetInstance();
-    static Encoder* encoder = Encoder::GetInstance();
-    static std::shared_ptr<MotionController> motionCon = MotionController::GetInstance();
+    
     switch (Timer::Mode) {
         case TimerMode::NONE: {
             break;
@@ -20,14 +18,12 @@ void Timer::Interrupt() {
         case TimerMode::SCAN: {
             sensor->Scan();
             encoder->Scan();
+            /*
             if(motionCon != nullptr && motionCon->IsEnable()){
                 motionCon->Update();
             }
+            */
             break;
         }
     }
-}
-
-const int32_t Timer::GetCount(){
-    return count;
 }

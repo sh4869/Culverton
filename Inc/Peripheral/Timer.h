@@ -15,11 +15,12 @@ enum class TimerMode : std::uint8_t { NONE, BATTERY, SCAN };
 
 class Timer {
 private:
-    static int32_t count;
+    static BatteryMonitor *bm;
+    static Sensor *sensor;
+    static Encoder *encoder;
 public:
     static void Interrupt();
     static TimerMode Mode;
-    static const int32_t GetCount();
 };
 
 #endif
