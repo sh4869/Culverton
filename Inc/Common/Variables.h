@@ -12,7 +12,7 @@ static constexpr float GearRatio = 8.0F / 42.0F;
 /**
  * タイヤ半径
  */ 
-static constexpr float WheelRadius = 27.0F / 2.0F;
+static constexpr float WheelRadius = (27.0F / 2.0F) / 1000.0;
 /**
  * エンコーダの1回転あたりのパルス数
  */
