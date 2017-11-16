@@ -16,12 +16,10 @@ enum class TimerMode : std::uint8_t { NONE, BATTERY, SCAN };
 class Timer {
 private:
     static int32_t count;
-    static std::shared_ptr<MotionController> motionCon;
 public:
     static void Interrupt();
     static TimerMode Mode;
     static const int32_t GetCount();
-    static void SetMotionController(std::shared_ptr<MotionController> con);
 };
 
 #endif
