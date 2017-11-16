@@ -226,6 +226,6 @@ clear: clean
 # download to device
 #######################################
 deploy: all
-	cd build && STMFlashLoader.exe -c --pn 9 --br 115200 --pr EVEN -i STM32F1_High-density_512K -e --all -d --a 8000000 --fn "Culverton.hex" && cd .. && rundll32.exe user32.dll,MessageBeep && sleep 0.5 && rundll32.exe user32.dll,MessageBeep && sleep 0.5 && rundll32.exe user32.dll,MessageBeep
+	cd build && STMFlashLoader.exe -c --pn 4 --br 115200 --pr EVEN -i STM32F1_High-density_512K -e --all -d --a 8000000 --fn "Culverton.hex" && cd .. && rundll32.exe user32.dll,MessageBeep && sleep 0.5 && rundll32.exe user32.dll,MessageBeep && sleep 0.5 && rundll32.exe user32.dll,MessageBeep
 
 # *** EOF ***
