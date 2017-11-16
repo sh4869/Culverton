@@ -1,17 +1,26 @@
 #include "MotionController.h"
 
+std::shared_ptr<MotionController> MotionController::instance = nullptr;
 
 MotionController::MotionController()
     : estimator(std::make_shared<StateEstimator>(T)),
       targeter(std::make_shared<TargetGenerator>()),
-      motor(Motor::GetInstance()) {
+      enable(false) {
     // TODO : 何も考えてない
     PIDParams p(100.0f, 3.4f, 0.0f);
     speedcvgen = std::unique_ptr<SpeedCVGenerator>(new SpeedCVGenerator(p, estimator, targeter));
     angspeedcvgen = std::unique_ptr<AngularVelocityCVGenerator>(new AngularVelocityCVGenerator(p, estimator, targeter));
 }
 
+std::shared_ptr<MotionController> MotionController::GetInstance() {
+    if (instance == nullptr) {
+        instance = std::make_shared<MotionController>();
+    }
+    return instance;
+}
+
 void MotionController::Update() {
+    Motor* motor = Motor::GetInstance();
     // 推定機の更新
     estimator->Update();
     // Targetの更新
@@ -43,6 +52,18 @@ void MotionController::Update() {
     
 }
 
-void MotionController::SetMotion(Motion::MotionBase *_motion){
+void MotionController::SetMotion(Motion::MotionBase* _motion) {
     targeter->SetMotion(_motion);
+}
+
+void MotionController::Enable() {
+    enable = true;
+}
+
+void MotionController::Disable() {
+    enable = false;
+}
+
+const bool& MotionController::IsEnable() {
+    return enable;
 }

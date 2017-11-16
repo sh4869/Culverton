@@ -15,14 +15,19 @@ public:
     ~MotionController() = default;
     void Update();
     void SetMotion(Motion::MotionBase *_motion);
+    static std::shared_ptr<MotionController> GetInstance();
+    std::shared_ptr<TargetGenerator> targeter;
+    void Enable();
+    void Disable();
+    const bool& IsEnable();
 private:
+    static std::shared_ptr<MotionController> instance;
     constexpr static char CVGeneratorSize = 4;
     constexpr static float T = 0.001f;
     std::unique_ptr<SpeedCVGenerator> speedcvgen;
     std::unique_ptr<AngularVelocityCVGenerator> angspeedcvgen;
     std::shared_ptr<StateEstimator> estimator;
-    std::shared_ptr<TargetGenerator> targeter;
-    Motor *motor;
+    bool enable;
 };
 
 
