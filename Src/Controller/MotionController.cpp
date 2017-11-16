@@ -26,30 +26,34 @@ void MotionController::Update() {
     // Targetの更新
     targeter->Update();
     // 処理の実行
-    switch (targeter->GetTarget().variety) {
-        case Target::TargetVariety::STRAIGHT: {
-            const auto speedcv = speedcvgen->Update();
-            const auto angspeedcv = angspeedcvgen->Update();
-            motor->SetDuty(MotorPosition::RIGHT, speedcv + angspeedcv);
-            motor->SetDuty(MotorPosition::LEFT, speedcv - angspeedcv);
-            break;
+    if (targeter->HasMotion()) {
+        switch (targeter->GetTarget().variety) {
+            case Target::TargetVariety::STRAIGHT: {
+                const auto speedcv = speedcvgen->Update();
+                const auto angspeedcv = angspeedcvgen->Update();
+                motor->SetDuty(MotorPosition::RIGHT, speedcv + angspeedcv);
+                motor->SetDuty(MotorPosition::LEFT, speedcv - angspeedcv);
+                break;
+            }
+            case Target::TargetVariety::PIVOTTURN:
+                break;
+            case Target::TargetVariety::STOP: {
+                // 止める
+                const MotorDuty duty = { 0, 0 };
+                motor->SetDuty(duty);
+                break;
+            }
+            default:
+                const MotorDuty duty = { 0, 0 };
+                motor->SetDuty(duty);
+                motor->Stop(MotorPosition::RIGHT);
+                motor->Stop(MotorPosition::LEFT);
+                break;
         }
-        case Target::TargetVariety::PIVOTTURN:
-            break;
-        case Target::TargetVariety::STOP:{
-            // 止める
-            const MotorDuty duty = {0,0};
-            motor->SetDuty(duty);
-            break;
-        }
-        default:
-            const MotorDuty duty = {0,0};
-            motor->SetDuty(duty);
-            motor->Stop(MotorPosition::RIGHT);
-            motor->Stop(MotorPosition::LEFT);
-            break;
+    } else {
+        motor->SetDuty(MotorPosition::RIGHT,0);
+        motor->SetDuty(MotorPosition::LEFT,0);
     }
-    
 }
 
 void MotionController::SetMotion(Motion::MotionBase* _motion) {
