@@ -26,3 +26,7 @@ const Velocity& TargetGenerator::GetTargetVelocity() {
 void TargetGenerator::SetMotion(Motion::MotionBase* _motion) {
     motions.push(_motion);
 }
+
+bool TargetGenerator::HasMotion(){
+    return !motions.empty();
+}

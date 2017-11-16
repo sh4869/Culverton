@@ -16,6 +16,7 @@ public:
     const Position& GetTargetPosition();
     const Target& GetTarget();
     void SetMotion(Motion::MotionBase *_motion);
+    bool HasMotion();
 private:
     // もちろん最終的にはqueueにするがとりあえず
     std::queue<Motion::MotionBase*> motions;
