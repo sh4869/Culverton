@@ -1,12 +1,25 @@
 #include "TargetGenerator.h"
 
 void TargetGenerator::Update() {
-    if (motions.front()->Finished()) {
-        motions.pop();
-    }
+    // nullチェック
     if (!motions.empty()) {
-        currentTarget = motions.front()->next();
+        if (motions.front()->Finished()) {
+            motions.pop();
+        }
+        if (!motions.empty()) {
+            currentTarget = motions.front()->next();
+        } else {
+            Target none;
+            none.variety = Target::TargetVariety::STOP;
+            none.pos = Position();
+            none.ve = Velocity();
+            currentTarget = none;
+        }
     } else {
+        Target none;
+        none.variety = Target::TargetVariety::STOP;
+        none.pos = Position();
+        none.ve = Velocity();
         currentTarget = none;
     }
 }
@@ -27,6 +40,6 @@ void TargetGenerator::SetMotion(Motion::MotionBase* _motion) {
     motions.push(_motion);
 }
 
-bool TargetGenerator::HasMotion(){
+bool TargetGenerator::HasMotion() {
     return !motions.empty();
 }

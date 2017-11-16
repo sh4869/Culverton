@@ -20,7 +20,6 @@ public:
 private:
     // もちろん最終的にはqueueにするがとりあえず
     std::queue<Motion::MotionBase*> motions;
-    Target none = {};
     Target currentTarget;
 };
 
