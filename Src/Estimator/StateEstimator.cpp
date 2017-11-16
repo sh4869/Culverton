@@ -3,8 +3,8 @@
 
 StateEstimator::StateEstimator(float _T)
     : T(_T),
-      speedestimator(std::make_unique<SpeedEstimator>(_T)),
-      odometry(std::make_unique<Odometry>(_T)) {
+      speedestimator(std::unique_ptr<SpeedEstimator>(new SpeedEstimator(_T))),
+      odometry(std::unique_ptr<Odometry>(new Odometry(_T))) {
     encoder = Encoder::GetInstance();
 }
 

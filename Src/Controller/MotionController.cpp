@@ -6,9 +6,9 @@ MotionController::MotionController()
       targeter(std::make_shared<TargetGenerator>()),
       motor(Motor::GetInstance()) {
     // TODO : 何も考えてない
-    PIDParams p(100.0f,3.4f,0.0f); 
-    speedcvgen = std::make_unique<SpeedCVGenerator>(p, estimator, targeter);
-    angspeedcvgen = std::make_unique<AngularVelocityCVGenerator>(p, estimator, targeter);
+    PIDParams p(100.0f, 3.4f, 0.0f);
+    speedcvgen = std::unique_ptr<SpeedCVGenerator>(new SpeedCVGenerator(p, estimator, targeter));
+    angspeedcvgen = std::unique_ptr<AngularVelocityCVGenerator>(new AngularVelocityCVGenerator(p, estimator, targeter));
 }
 
 void MotionController::Update() {

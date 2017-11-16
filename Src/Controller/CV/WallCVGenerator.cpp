@@ -1,7 +1,7 @@
 #include "WallCVGenerator.h"
 
 WallCVGenerator::WallCVGenerator(PIDParams _params)
-    : pidController(std::make_unique<PIDController>(_params)),
+    : pidController(std::unique_ptr<PIDController>(new PIDController(_params))),
       sensorController(SensorController::GetInstance()) {}
 
 // 右の値が大きいほど(つまり壁に近いほど)大きな値が返るようになっている
