@@ -18,6 +18,7 @@ private:
     static BatteryMonitor *bm;
     static Sensor *sensor;
     static Encoder *encoder;
+    static std::shared_ptr<MotionController> motionCon;
 public:
     static void Interrupt();
     static TimerMode Mode;

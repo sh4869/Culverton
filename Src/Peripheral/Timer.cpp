@@ -4,6 +4,7 @@ TimerMode Timer::Mode = TimerMode::NONE;
 BatteryMonitor* Timer::bm = BatteryMonitor::GetInstance();
 Sensor* Timer::sensor = Sensor::GetInstance();
 Encoder* Timer::encoder = Encoder::GetInstance();
+std::shared_ptr<MotionController> Timer::motionCon = MotionController::GetInstance();
 
 void Timer::Interrupt() {
     
@@ -18,11 +19,9 @@ void Timer::Interrupt() {
         case TimerMode::SCAN: {
             sensor->Scan();
             encoder->Scan();
-            /*
-            if(motionCon != nullptr && motionCon->IsEnable()){
+            if(motionCon->IsEnable()){
                 motionCon->Update();
             }
-            */
             break;
         }
     }
