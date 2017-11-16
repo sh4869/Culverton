@@ -31,6 +31,7 @@ void MotionController::Update() {
             case Target::TargetVariety::STRAIGHT: {
                 const auto speedcv = speedcvgen->Update();
                 const auto angspeedcv = angspeedcvgen->Update();
+                motor->SetStandby();
                 motor->SetDuty(MotorPosition::RIGHT, speedcv + angspeedcv);
                 motor->SetDuty(MotorPosition::LEFT, speedcv - angspeedcv);
                 break;
