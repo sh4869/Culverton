@@ -13,7 +13,6 @@ namespace Motion {
           is_finish(false) {
         cnt = 0;
         odometry->Reset();
-        basecount = Timer::GetCount();
         // とりあえず距離内でに加速しきるかの計算
         float _tstart = (v_target - v_start) / (accel * T);
         float _tend = (v_target - v_end) / (accel * T);

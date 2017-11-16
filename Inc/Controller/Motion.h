@@ -26,7 +26,6 @@ namespace Motion {
         float t1,t2,t3;
         float accel;
         int32_t cnt;
-        int32_t basecount;
         std::unique_ptr<Odometry> odometry;
         bool is_finish;
     };
