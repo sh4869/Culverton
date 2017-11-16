@@ -9,7 +9,7 @@ StateEstimator::StateEstimator(float _T)
 }
 
 void StateEstimator::Update() {
-    auto e = encoder->GetValue();
+    auto e = encoder->GetVelocity();
     speedestimator->Update(e);
     odometry->Update(speedestimator->GetVelocity());
 }
