@@ -1,5 +1,6 @@
 #include "StateEstimator.h"
 #include "Velocity.h"
+#include "Logger.h"
 
 StateEstimator::StateEstimator(float _T)
     : T(_T),
@@ -10,6 +11,7 @@ StateEstimator::StateEstimator(float _T)
 
 void StateEstimator::Update() {
     auto e = encoder->GetVelocity();
+    Log::Encoder::Push(e);
     speedestimator->Update(e);
     odometry->Update(speedestimator->GetVelocity());
 }
