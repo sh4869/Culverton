@@ -7,6 +7,7 @@
 #ifndef ENCODER_H_
 #define ENCODER_H_
 
+#include <array>
 #include "stm32f1xx_hal.h"
 
 struct EncoderValue {
@@ -30,6 +31,10 @@ private:
 
     TIM_HandleTypeDef htim2, htim3;
     EncoderValue value, lastValue;
+    static constexpr int historysize = 10;
+    std::array<EncoderValue, historysize> history;
+    int historyindex = 0;
+    EncoderVelocity velocity;
 
 public:
     static Encoder* GetInstance();
@@ -37,6 +42,7 @@ public:
     void Stop();
     void Scan();
     const EncoderValue& GetValue();
+    const EncoderVelocity& GetVelocity();
 };
 
 #endif

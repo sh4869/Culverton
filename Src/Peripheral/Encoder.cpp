@@ -79,6 +79,11 @@ void Encoder::init() {
     HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig);
     TIM2->CNT = 0;
     TIM3->CNT = 0;
+    for(int i = 0;i<historysize;i++){
+        history.at(i)=EncoderValue();
+    }
+    velocity.right = 0;
+    velocity.left = 0;
 }
 
 Encoder* Encoder::GetInstance() {
@@ -108,19 +113,35 @@ void Encoder::Scan() {
     const uint16_t enc_left = TIM3->CNT;
     TIM2->CNT = 0;
     TIM3->CNT = 0;
-    // 秒速
     if(enc_right > std::numeric_limits<int16_t>::max()){
         value.right = -(int16_t)enc_right;
     } else {
         value.right = -enc_right;
     }
+    
     if(enc_left > std::numeric_limits<int16_t>::max()){
         value.left = (int16_t)enc_left;
     } else {
         value.left = enc_left;
     }
+    // Bufferに追加
+    history.at(historyindex) = value;
+    if(++historyindex >= historysize) historyindex = 0;
+    // 平均速度を算出
+    velocity.right = 0;
+    velocity.left = 0;
+    for(auto i: history){
+        velocity.right += i.right;
+        velocity.left += i.left;
+    }
+    velocity.right /= historysize;
+    velocity.left /= historysize;
 }
 
 const EncoderValue& Encoder::GetValue() {
     return value;
+}
+
+const EncoderVelocity& Encoder::GetVelocity(){
+    return velocity;
 }
