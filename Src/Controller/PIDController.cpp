@@ -12,8 +12,7 @@ PIDController::PIDController(const PIDParams& _param) : param(_param) {}
 /**
  * @brief デコンストラクタ
  */
-PIDController::~PIDController() {
-}
+PIDController::~PIDController() {}
 
 /**
  * @brief
@@ -31,7 +30,7 @@ float PIDController::Update(float measured, float reference) {
     float error_dif = (error - prev_error) / param.T;
     error_sum += error * param.T;
     prev_error = error;
-    return param.kp * error + param.kd * error_dif + param.ki * error_sum;
+    return param.kp * error + param.kd * error_dif + param.ki * error_sum + param.kr * reference;
 }
 
 /**
@@ -44,14 +43,14 @@ void PIDController::Reset() {
     error_sum = 0.0f;
 }
 
-void PIDController::SetParams(const PIDParams& _param){
+void PIDController::SetParams(const PIDParams& _param) {
     param = _param;
 }
 
 /**
  * @brief Return PIDParams
- * 
- * @return const PIDParams& 
+ *
+ * @return const PIDParams&
  */
 const PIDParams& PIDController::GetParams() {
     return param;
